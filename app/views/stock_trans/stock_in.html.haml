@@ -1,0 +1,6 @@
+%h3= '入库'
+
+= form_tag(stock_in_stock_tran_url , method: 'get', class: 'form-inline') do
+  = text_field_tag :master_id, nil, placeholder: t('attributes.master_id'), class: 'form-control input-sm', value: params[:master_id]
+  = button_tag class: 'btn btn-success btn-form-submit', type: 'button' do
+    %span.glyphicon.glyphicon-search

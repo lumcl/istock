@@ -1,0 +1,12 @@
+%h3= t('edit_work_order')
+%h5
+  = link_to t('show'), @work_order
+  \|
+  = link_to t('back'), work_orders_path
+
+= render 'form'
+
+%h5
+  = link_to t('show'), @work_order
+  \|
+  = link_to t('back'), work_orders_path

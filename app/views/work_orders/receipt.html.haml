@@ -1,0 +1,43 @@
+%h3= t('work_order_receipt')
+
+= form_tag(receipt_work_orders_url , method: 'get', class: 'form-inline') do
+  = text_field_tag :budat, nil, placeholder: t('attributes.budat'), class: 'form-control input-sm', value: params[:budat] || Time.now.strftime('%Y%m%d')
+  = text_field_tag :usnam, nil, placeholder: t('attributes.usnam'), class: 'form-control input-sm', value: params[:usnam]
+  = text_field_tag :werks, nil, placeholder: t('attributes.werks'), class: 'form-control input-sm', value: params[:werks]
+  = text_field_tag :matnr, nil, placeholder: t('attributes.matnr'), class: 'form-control input-sm', value: params[:matnr]
+  = text_field_tag :aufnr, nil, placeholder: t('attributes.aufnr'), class: 'form-control input-sm', value: params[:aufnr]
+  = button_tag class: 'btn btn-success btn-form-submit', type: 'button' do
+    %span.glyphicon.glyphicon-search
+
+.table-responsived
+  %table.table.table-hover.table-condensed.small
+    %thead
+      %tr
+        %th= t('action')
+        %th= t('attributes.mblnr')
+        %th= t('attributes.cputm')
+        %th= t('attributes.aufnr')
+        %th= t('attributes.matnr')
+        %th= t('attributes.charg')
+        %th= t('attributes.dcode')
+        %th.text-right= t('attributes.menge')
+        %th= t('attributes.usnam')
+        %th= t('attributes.werks')
+        %th= t('attributes.lgort')
+    %tbody
+      - @list.each do |row|
+        %tr
+          %td
+            = link_to t('print_receipt'), stock_in_label_work_order_path(row.rowid)
+            |
+            = link_to t('print_box_label'), confirm_box_label_work_order_path(row.rowid)
+          %td= row.mblnr
+          %td= row.cputm
+          %td= row.aufnr
+          %td= row.matnr
+          %td= row.charg
+          %td= row.atwrt
+          %td.text-right= number_with_precision(row.menge, precision: 12, significant: true, strip_insignificant_zeros: true, delimiter: ',')
+          %td= row.usnam
+          %td= row.werks
+          %td= row.lgort

@@ -1,0 +1,12 @@
+%h3= t('attributes.work_order')
+%h5
+  = link_to t('edit'), edit_work_order_path(@work_order)
+  \|
+  = link_to t('back'), work_orders_path
+
+= render partial: 'layouts/show', :locals => {object: @work_order}
+
+%h5
+  = link_to t('edit'), edit_work_order_path(@work_order)
+  \|
+  = link_to t('back'), work_orders_path

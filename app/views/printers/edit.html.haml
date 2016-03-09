@@ -1,0 +1,12 @@
+%h3= t('edit_printer')
+%h5
+  = link_to t('show'), @printer
+  \|
+  = link_to t('back'), printers_path
+
+= render 'form'
+
+%h5
+  = link_to t('show'), @printer
+  \|
+  = link_to t('back'), printers_path

@@ -1,0 +1,42 @@
+%h3= t('attributes.barcode')
+
+%h5
+  = link_to t('new_barcode'), new_barcode_path
+
+= form_tag(barcodes_url, method: 'get', class: 'form-inline') do
+  = text_field_tag :name, nil, placeholder: t('attributes.name'), class: 'form-control input-sm', value: params[:name]
+  = button_tag class: 'btn btn-success btn-form-submit', type: 'button' do
+    %span.glyphicon.glyphicon-search
+
+.table-responsive
+  %table.table.table-hover.table-condensed.table-bordered
+    %thead
+      %tr
+        %th= t('action')
+        %th= t('attributes.name')
+        %th= t('attributes.stock_master_id')
+        %th= t('attributes.parent_id')
+        %th= t('attributes.child')
+        %th= t('attributes.lgort')
+        %th= t('attributes.status')
+        %th= t('attributes.menge')
+    %tbody
+      - @barcodes.each do |barcode|
+        %tr
+          %td
+            = link_to t('edit'), edit_barcode_path(barcode)
+            |
+            = link_to t('delete'), barcode, :method => :delete, :data => { :confirm => t('confirm_delete')}
+
+          %td= barcode.name
+          %td= barcode.stock_master_id
+          %td= barcode.parent_id
+          %td= barcode.child
+          %td= barcode.lgort
+          %td= barcode.status
+          %td= barcode.menge
+
+%h5
+  = link_to t('new_barcode'), new_barcode_path
+
+= paginate @barcodes unless @barcodes.empty?

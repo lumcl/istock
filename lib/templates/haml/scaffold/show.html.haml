@@ -1,0 +1,12 @@
+%h3= t('attributes.<%= singular_table_name %>')
+%h5
+  = link_to t('edit'), edit_<%= singular_table_name %>_path(@<%= singular_table_name %>)
+  \|
+  = link_to t('back'), <%= index_helper %>_path
+
+= render partial: 'layouts/show', :locals => {object: @<%= singular_table_name %>}
+
+%h5
+  = link_to t('edit'), edit_<%= singular_table_name %>_path(@<%= singular_table_name %>)
+  \|
+  = link_to t('back'), <%= index_helper %>_path

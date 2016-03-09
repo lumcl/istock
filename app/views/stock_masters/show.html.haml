@@ -1,0 +1,12 @@
+%h3= t('attributes.stock_master')
+%h5
+  = link_to t('edit'), edit_stock_master_path(@stock_master)
+  \|
+  = link_to t('back'), stock_masters_path
+
+= render partial: 'layouts/show', :locals => {object: @stock_master}
+
+%h5
+  = link_to t('edit'), edit_stock_master_path(@stock_master)
+  \|
+  = link_to t('back'), stock_masters_path

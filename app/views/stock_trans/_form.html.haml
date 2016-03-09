@@ -1,0 +1,33 @@
+= simple_form_for(@stock_tran) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :master_id
+    = f.input :barcode_id
+    = f.input :lgort_old
+    = f.input :lgort
+    = f.input :status
+    = f.input :qty
+    = f.input :vbeln
+    = f.input :posnr
+    = f.input :meins
+    = f.input :mjahr
+    = f.input :mblnr
+    = f.input :zeile
+    = f.input :aufnr
+    = f.input :prdln
+    = f.input :ebeln
+    = f.input :ebelp
+    = f.input :mtype
+    = f.input :created_by
+    = f.input :created_ip
+    = f.input :created_mac
+    = f.input :updated_by
+    = f.input :updated_ip
+    = f.input :updated_mac
+
+  .form-actions
+    .clearfix
+    = button_tag class: 'btn btn-danger', type: 'button', onclick: "$(this).button('loading');this.form.submit();", data:{loading_text: t('saving')} do
+      %span.glyphicon.glyphicon-floppy-save
+      = t('save')

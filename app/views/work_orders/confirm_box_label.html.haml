@@ -1,0 +1,80 @@
+.table-responsive
+  %table.table.table-condensed.small.table-bordered
+    %tbody
+      %tr
+        %th.text-right{:width=>'25%'}= t('attributes.aufnr')
+        %td{:width=>'25%'}= @record[:aufnr]
+        %th.text-right{:width=>'25%'}= t('attributes.matnr')
+        %td{:width=>'25%'}= @record[:matnr]
+      %tr
+        %th.text-right= t('attributes.dcode')
+        %td= @record[:atwrt]
+        %th.text-right= t('attributes.charg')
+        %td= @record[:charg]
+      %tr
+        %th.text-right= t('attributes.menge')
+        %td
+          = @record[:menge]
+          = @record[:meins]
+        %th.text-right= '入庫 / 訂單'
+        %td
+          %span.text-primary
+            = @record[:wemng]
+          \/
+          = @record[:psmng]
+          = @record[:meins]
+      %tr
+        %th.text-right= t('attributes.werks')
+        %td
+          = @record[:werks]
+          \/
+          = @record[:lgort]
+        %th.text-right= t('attributes.mblnr')
+        %td= "#{@record[:mjahr]}-#{@record[:mblnr]}"
+      %tr
+        %th.text-right= t('attributes.budat')
+        %td= "#{@record[:budat]} / #{@record[:cputm]}"
+        %th.text-right= t('attributes.usnam')
+        %td= @record[:usnam]
+
+= form_tag(print_box_label_work_order_path(@record[:rowid]), method: 'post', class: 'form-inline') do
+  = hidden_field_tag :mblnr, @record[:mblnr]
+  = hidden_field_tag :mjahr, @record[:mjahr]
+  = hidden_field_tag :zeile, @record[:zeile]
+  %table.table.table-bordered
+    %thead
+      %tr
+        %th.text-right{:width=>'120px'} 項目
+        %th.text-right{:width=>'10px'} 每包裝數量
+        %th.text-right{:width=>'10px'} 箱/棧板數
+        %th.text-right{:width=>'10px'} 總數量
+        %th
+    %tbody
+      %tr
+        %td.text-right 紙箱/膠框
+        %td= text_field_tag :box_qty, nil, class: 'form-control input-sm small text-right', value: @record[:box_qty]
+        %td= text_field_tag :no_of_box1, nil, class: 'form-control input-sm small text-right', value: @record[:no_of_box1]
+        %td= text_field_tag :total_qty1, nil, class: 'form-control input-sm small text-right', value: @record[:box_qty] * @record[:no_of_box1]
+      %tr
+        %td.text-right 尾數箱/尾數框
+        %td= text_field_tag :box_qty2, nil, class: 'form-control input-sm small text-right', value: @record[:box_qty2]
+        %td= text_field_tag :no_of_box2, nil, class: 'form-control input-sm small text-right', value: @record[:no_of_box2]
+        %td= text_field_tag :total_qty2, nil, class: 'form-control input-sm small text-right', value: @record[:box_qty2] * @record[:no_of_box2]
+      %tr.bg-warning
+        %td.text-right 棧板
+        %td= text_field_tag :pallet_qty, nil, class: 'form-control input-sm small text-right', value: @record[:pallet_qty]
+        %td= text_field_tag :no_of_pallet1, nil, class: 'form-control input-sm small text-right', value: @record[:no_of_pallet1]
+        %td= text_field_tag :total_box1, nil, class: 'form-control input-sm small text-right', value: @record[:pallet_qty] * @record[:no_of_pallet1]
+      %tr.bg-warning
+        %td.text-right 尾數棧板
+        %td= text_field_tag :pallet_qty2, nil, class: 'form-control input-sm small text-right', value: @record[:pallet_qty2]
+        %td= text_field_tag :no_of_pallet2, nil, class: 'form-control input-sm small text-right', value: @record[:no_of_pallet2]
+        %td= text_field_tag :total_box2, nil, class: 'form-control input-sm small text-right', value: @record[:pallet_qty2] * @record[:no_of_pallet2]
+
+  選擇打印機
+
+  = select_tag 'printer_id', options_from_collection_for_select(Printer.all.select(:uuid,:code), 'uuid', 'code', current_user.printer_id), class: 'select optional form-control'
+
+  = button_tag class: 'btn btn-primary btn-form-submit btn-lg', type: 'button' do
+    打印外箱條碼標籤
+    %span.glyphicon.glyphicon-print

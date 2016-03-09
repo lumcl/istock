@@ -1,0 +1,35 @@
+!!!
+%html
+  %head
+    %meta{charset: 'utf-8'}/
+    %meta{content: 'width=device-width, initial-scale=1.0', name: 'viewport'}/
+
+    %title= "#{controller_name}.#{action_name}"
+    %meta{:name => "description", :content => "#{content_for?(:description) ? yield(:description) : 'istock'}"}
+
+    %link{href: '/css/bootstrap.min.css', rel:'stylesheet'}
+    %link{href: '/css/bootstrap-datetimepicker.min.css', rel:'stylesheet'}
+    %link{href: '/css/bootstrap-editable.css', rel:'stylesheet'}
+    %script{src: '/js/jquery.min.js'}
+    %script{src: '/js/jquery_ujs.js'}
+    %script{src: '/js/bootstrap.min.js'}
+    %script{src: '/js/moment.min.js'}
+    %script{src: '/js/bootstrap-datetimepicker.min.js'}
+    %script{src: '/js/bootstrap3-autocomplete-input.min.js'}
+    %script{src: '/js/bootstrap3-typeahead.min.js'}
+    %script{src: '/js/bootstrap-editable.min.js'}
+
+    = stylesheet_link_tag 'application'
+    = javascript_include_tag 'application'
+
+    = csrf_meta_tags
+  %body
+    = render 'layouts/navigation'
+    #wrap
+      .container
+        .narrow-well
+          = render 'layouts/messages'
+          .container
+            = yield
+    #footer
+      .container

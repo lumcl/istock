@@ -1,0 +1,74 @@
+%h3= t('attributes.stock_tran')
+
+%h5
+  = link_to t('new_stock_tran'), new_stock_tran_path
+
+= form_tag(stock_trans_url, method: 'get', class: 'form-inline') do
+  = text_field_tag :name, nil, placeholder: t('attributes.name'), class: 'form-control input-sm', value: params[:name]
+  = button_tag class: 'btn btn-success btn-form-submit', type: 'button' do
+    %span.glyphicon.glyphicon-search
+
+.table-responsive
+  %table.table.table-hover.table-condensed.table-bordered
+    %thead
+      %tr
+        %th= t('action')
+        %th= t('attributes.master_id')
+        %th= t('attributes.barcode_id')
+        %th= t('attributes.lgort_old')
+        %th= t('attributes.lgort')
+        %th= t('attributes.status')
+        %th= t('attributes.qty')
+        %th= t('attributes.vbeln')
+        %th= t('attributes.posnr')
+        %th= t('attributes.meins')
+        %th= t('attributes.mjahr')
+        %th= t('attributes.mblnr')
+        %th= t('attributes.zeile')
+        %th= t('attributes.aufnr')
+        %th= t('attributes.prdln')
+        %th= t('attributes.ebeln')
+        %th= t('attributes.ebelp')
+        %th= t('attributes.mtype')
+        %th= t('attributes.created_by')
+        %th= t('attributes.created_ip')
+        %th= t('attributes.created_mac')
+        %th= t('attributes.updated_by')
+        %th= t('attributes.updated_ip')
+        %th= t('attributes.updated_mac')
+    %tbody
+      - @stock_trans.each do |stock_tran|
+        %tr
+          %td
+            = link_to t('edit'), edit_stock_tran_path(stock_tran)
+            |
+            = link_to t('delete'), stock_tran, :method => :delete, :data => { :confirm => t('confirm_delete')}
+
+          %td= stock_tran.master_id
+          %td= stock_tran.barcode_id
+          %td= stock_tran.lgort_old
+          %td= stock_tran.lgort
+          %td= stock_tran.status
+          %td= stock_tran.qty
+          %td= stock_tran.vbeln
+          %td= stock_tran.posnr
+          %td= stock_tran.meins
+          %td= stock_tran.mjahr
+          %td= stock_tran.mblnr
+          %td= stock_tran.zeile
+          %td= stock_tran.aufnr
+          %td= stock_tran.prdln
+          %td= stock_tran.ebeln
+          %td= stock_tran.ebelp
+          %td= stock_tran.mtype
+          %td= stock_tran.created_by
+          %td= stock_tran.created_ip
+          %td= stock_tran.created_mac
+          %td= stock_tran.updated_by
+          %td= stock_tran.updated_ip
+          %td= stock_tran.updated_mac
+
+%h5
+  = link_to t('new_stock_tran'), new_stock_tran_path
+
+= paginate @stock_trans unless @stock_trans.empty?

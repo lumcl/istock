@@ -1,0 +1,52 @@
+%h3= t('attributes.stock_master')
+
+%h5
+  = link_to t('new_stock_master'), new_stock_master_path
+
+= form_tag(stock_masters_url, method: 'get', class: 'form-inline') do
+  = text_field_tag :name, nil, placeholder: t('attributes.name'), class: 'form-control input-sm', value: params[:name]
+  = button_tag class: 'btn btn-success btn-form-submit', type: 'button' do
+    %span.glyphicon.glyphicon-search
+
+.table-responsive
+  %table.table.table-hover.table-condensed.table-bordered
+    %thead
+      %tr
+        %th= t('action')
+        %th= t('attributes.matnr')
+        %th= t('attributes.matkl')
+        %th= t('attributes.charg')
+        %th= t('attributes.dcode')
+        %th= t('attributes.menge')
+        %th= t('attributes.box_cnt')
+        %th= t('attributes.pallet_cnt')
+        %th= t('attributes.werks')
+        %th= t('attributes.meins')
+        %th= t('attributes.mblnr')
+        %th= t('attributes.aufnr')
+    %tbody
+      - @stock_masters.each do |stock_master|
+        %tr
+          %td
+            = link_to t('edit'), edit_stock_master_path(stock_master)
+            |
+            = link_to t('delete'), stock_master, :method => :delete, :data => { :confirm => t('confirm_delete')}
+
+          %td= stock_master.matnr
+          %td= stock_master.matkl
+          %td= stock_master.charg
+          %td= stock_master.datecode
+          %td.text-right= stock_master.menge.to_i
+          %td.text-right= stock_master.box_cnt
+          %td.text-right= stock_master.pallet_cnt
+          %td= stock_master.werks
+          %td= stock_master.meins
+          %td
+            = stock_master.mjahr
+            = stock_master.mblnr
+          %td= stock_master.aufnr
+
+%h5
+  = link_to t('new_stock_master'), new_stock_master_path
+
+= paginate @stock_masters unless @stock_masters.empty?

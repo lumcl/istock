@@ -1,0 +1,16 @@
+= simple_form_for(@printer) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :code
+    = f.input :name
+    = f.input :ip
+    = f.input :port
+    = f.input :creator_id, readonly: true
+    = f.input :updater_id, readonly: true
+
+  .form-actions
+    .clearfix
+    = button_tag class: 'btn btn-danger', type: 'button', onclick: "$(this).button('loading');this.form.submit();", data:{loading_text: t('saving')} do
+      %span.glyphicon.glyphicon-floppy-save
+      = t('save')

@@ -1,0 +1,28 @@
+%h3= t('attributes.work_order')
+
+%h5
+  = link_to t('new_work_order'), new_work_order_path
+
+= form_tag(work_orders_url, method: 'get', class: 'form-inline') do
+  = text_field_tag :name, nil, placeholder: t('attributes.name'), class: 'form-control input-sm', value: params[:name]
+  = button_tag class: 'btn btn-success btn-form-submit', type: 'button' do
+    %span.glyphicon.glyphicon-search
+
+.table-responsive
+  %table.table.table-hover.table-condensed.table-bordered
+    %thead
+      %tr
+        %th= t('action')
+    %tbody
+      - @work_orders.each do |work_order|
+        %tr
+          %td
+            = link_to t('edit'), edit_work_order_path(work_order)
+            |
+            = link_to t('delete'), work_order, :method => :delete, :data => { :confirm => t('confirm_delete')}
+
+
+%h5
+  = link_to t('new_work_order'), new_work_order_path
+
+= paginate @work_orders unless @work_orders.empty?

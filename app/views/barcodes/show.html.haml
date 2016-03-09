@@ -1,0 +1,12 @@
+%h3= t('attributes.barcode')
+%h5
+  = link_to t('edit'), edit_barcode_path(@barcode)
+  \|
+  = link_to t('back'), barcodes_path
+
+= render partial: 'layouts/show', :locals => {object: @barcode}
+
+%h5
+  = link_to t('edit'), edit_barcode_path(@barcode)
+  \|
+  = link_to t('back'), barcodes_path

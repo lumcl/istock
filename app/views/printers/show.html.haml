@@ -1,0 +1,12 @@
+%h3= t('attributes.printer')
+%h5
+  = link_to t('edit'), edit_printer_path(@printer)
+  \|
+  = link_to t('back'), printers_path
+
+= render partial: 'layouts/show', :locals => {object: @printer}
+
+%h5
+  = link_to t('edit'), edit_printer_path(@printer)
+  \|
+  = link_to t('back'), printers_path

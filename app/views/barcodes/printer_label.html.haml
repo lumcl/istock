@@ -1,0 +1,29 @@
+.panel.panel-default
+  .panel-heading
+    條碼信息查詢
+  .panel-body{style:'padding-bottom: 0px;'}
+    = form_tag(repeat_printer_barcodes_url, method: 'get', class: 'form-horizontal', id:'form_id') do
+      .form-group
+        .col-xs-12
+          = text_field_tag :barcode, nil,placeholder: t('attributes.barcode'), class: 'form-control', value:'', id: 'barcode'
+    %hr
+    - if @barcode.present?
+      %dl.dl-horizontal
+        %dt= t('attributes.barcode')
+        %dd= @barcode.seq
+        %dt= t('attributes.matnr')
+        %dd= @barcode.stock_master.matnr
+        %dt= t('attributes.aufnr')
+        %dd= @barcode.stock_master.aufnr
+        %dt= 'DCODE'
+        %dd= @barcode.stock_master.datecode
+        %dt= t('attributes.charg')
+        %dd= @barcode.stock_master.charg
+        %dt= "選擇打印機"
+
+        = form_tag(printer_label_barcodes_url, method: 'get', class: 'form-inline', id:'form_id') do
+          = hidden_field_tag :uuid,@barcode.uuid
+          = select_tag 'printer_id', options_from_collection_for_select(Printer.all.select(:uuid,:code), 'uuid', 'code', current_user.printer_id), class: 'select optional form-control'
+          = button_tag class: 'btn btn-primary btn-form-submit btn-lg', type: 'button' do
+            打印外箱條碼標籤
+            %span.glyphicon.glyphicon-print

@@ -1,0 +1,34 @@
+%h3= t('attributes.<%= singular_table_name %>')
+
+%h5
+  = link_to t('new_<%= singular_table_name %>'), new_<%= singular_table_name %>_path
+
+= form_tag(<%= index_helper %>_url, method: 'get', class: 'form-inline') do
+  = text_field_tag :name, nil, placeholder: t('attributes.name'), class: 'form-control input-sm', value: params[:name]
+  = button_tag class: 'btn btn-success btn-form-submit', type: 'button' do
+    %span.glyphicon.glyphicon-search
+
+.table-responsive
+  %table.table.table-hover.table-condensed.table-bordered
+    %thead
+      %tr
+        %th= t('action')
+<% for attribute in attributes -%>
+        %th= t('attributes.<%= attribute.name %>')
+<% end -%>
+    %tbody
+      - @<%= plural_table_name %>.each do |<%= singular_table_name %>|
+        %tr
+          %td
+            = link_to t('edit'), edit_<%= singular_table_name %>_path(<%= singular_table_name %>)
+            |
+            = link_to t('delete'), <%= singular_table_name %>, :method => :delete, :data => { :confirm => t('confirm_delete')}
+
+<% for attribute in attributes -%>
+          %td= <%= singular_table_name %>.<%= attribute.name %>
+<% end -%>
+
+%h5
+  = link_to t('new_<%= singular_table_name %>'), new_<%= singular_table_name %>_path
+
+= paginate @<%= plural_table_name %> unless @<%= plural_table_name %>.empty?

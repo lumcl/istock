@@ -1,0 +1,40 @@
+%h3= t('attributes.printer')
+
+%h5
+  = link_to t('new_printer'), new_printer_path
+
+= form_tag(printers_url, method: 'get', class: 'form-inline') do
+  = text_field_tag :name, nil, placeholder: t('attributes.name'), class: 'form-control input-sm', value: params[:name]
+  = button_tag class: 'btn btn-success btn-form-submit', type: 'button' do
+    %span.glyphicon.glyphicon-search
+
+.table-responsive
+  %table.table.table-hover.table-condensed.table-bordered
+    %thead
+      %tr
+        %th= t('action')
+        %th= t('attributes.code')
+        %th= t('attributes.name')
+        %th= t('attributes.ip')
+        %th= t('attributes.port')
+        %th= t('attributes.creator_id')
+        %th= t('attributes.updater_id')
+    %tbody
+      - @printers.each do |printer|
+        %tr
+          %td
+            = link_to t('edit'), edit_printer_path(printer)
+            |
+            = link_to t('delete'), printer, :method => :delete, :data => { :confirm => t('confirm_delete')}
+
+          %td= printer.code
+          %td= printer.name
+          %td= printer.ip
+          %td= printer.port
+          %td= printer.creator_id
+          %td= printer.updater_id
+
+%h5
+  = link_to t('new_printer'), new_printer_path
+
+= paginate @printers unless @printers.empty?

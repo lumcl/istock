@@ -1,0 +1,26 @@
+= simple_form_for(@stock_master) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :matnr
+    = f.input :maktx
+    = f.input :matkl
+    = f.input :charg
+    = f.input :menge
+    = f.input :box_cnt
+    = f.input :pallet_cnt
+    = f.input :werks
+    = f.input :meins
+    = f.input :mjahr
+    = f.input :mblnr
+    = f.input :zeile
+    = f.input :aufnr
+    = f.input :prdln
+    = f.input :ebeln
+    = f.input :ebelp
+
+  .form-actions
+    .clearfix
+    = button_tag class: 'btn btn-danger', type: 'button', onclick: "$(this).button('loading');this.form.submit();", data:{loading_text: t('saving')} do
+      %span.glyphicon.glyphicon-floppy-save
+      = t('save')

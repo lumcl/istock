@@ -1,0 +1,16 @@
+.table-responsive
+  %table.table.table-hover.table-condensed.table-bordered
+    %tr
+      - i = 0
+      - object.attributes.each do |attribute|
+        - if i == 2
+          - i = 1
+          %tr
+        - else
+          - i = i + 1
+        %th= t("attributes.#{attribute[0]}")
+        - if not attribute[1].nil? and (attribute[0][attribute[0].length - 3 .. attribute[0].length - 1]) == '_id' and not object.class.reflections[attribute[0][0 .. attribute[0].length - 4]].nil?
+          - child_object = object.read_attribute_for_serialization(attribute[0][0 .. attribute[0].length - 4])
+          %td= link_to child_object.name, child_object
+        - else
+          %td= attribute[1]

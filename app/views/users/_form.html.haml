@@ -1,0 +1,18 @@
+= simple_form_for(@user) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :email
+    = f.input :password
+    = f.input :username
+    = f.input :role
+    = f.input :territory, label: t('attributes.territory'), collection: Figaro.env.territory.split(",")
+    = f.input :printer_id, label: t('attributes.printer') ,collection: Printer.all, label_method: :code, value_method: :uuid
+
+    = #f.input :supplier, :as => :autocomplete, :source_query => autocomplete_supplier_name_tqrdc_suppliers_url , :items => 20, :minLength => 1
+
+  .form-actions
+    .clearfix
+    = button_tag class: 'btn btn-danger', type: 'button', onclick: "$(this).button('loading');this.form.submit();", data:{loading_text: t('saving')} do
+      %span.glyphicon.glyphicon-floppy-save
+      = t('save')

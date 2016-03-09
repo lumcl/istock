@@ -1,0 +1,12 @@
+%h3= t('attributes.user')
+%h5
+  = link_to t('edit'), edit_user_path(@user)
+  \|
+  = link_to t('back'), users_path
+
+= render partial: 'layouts/show', :locals => {object: @user}
+
+%h5
+  = link_to t('edit'), edit_user_path(@user)
+  \|
+  = link_to t('back'), users_path

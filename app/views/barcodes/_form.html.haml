@@ -1,0 +1,17 @@
+= simple_form_for(@barcode) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :name
+    = f.input :stock_master_id
+    = f.input :parent_id
+    = f.input :child
+    = f.input :lgort
+    = f.input :status
+    = f.input :menge
+
+  .form-actions
+    .clearfix
+    = button_tag class: 'btn btn-danger', type: 'button', onclick: "$(this).button('loading');this.form.submit();", data:{loading_text: t('saving')} do
+      %span.glyphicon.glyphicon-floppy-save
+      = t('save')

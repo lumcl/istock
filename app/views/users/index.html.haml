@@ -1,0 +1,40 @@
+%h3= t('attributes.user')
+
+%h5
+  = link_to t('new_user'), new_user_path
+
+= form_tag(users_url, method: 'get', class: 'form-inline') do
+  = text_field_tag :username, nil, placeholder: t('attributes.username'), class: 'form-control input-sm', value: params[:username]
+  = button_tag class: 'btn btn-success btn-form-submit', type: 'button' do
+    %span.glyphicon.glyphicon-search
+
+.table-responsive
+  %table.table.table-hover.table-condensed.table-bordered.small
+    %thead
+      %tr
+        %th= t('action')
+        %th= t('attributes.email')
+        %th= t('attributes.username')
+        %th= t('attributes.role')
+        %th= "廠區"
+        %th= t('attributes.printer')
+
+    %tbody
+      - @users.each do |user|
+        %tr
+          %td
+            = link_to t('edit'), edit_user_path(user)
+            |
+            = link_to t('delete'), user, :method => :delete, :data => { :confirm => t('confirm_delete')}
+
+          %td= user.email
+          %td= user.username
+          %td= user.role
+          %td= user.territory
+          %td
+            = user.printer.code if user.printer.present?
+
+%h5
+  = link_to t('new_user'), new_user_path
+
+= paginate @users

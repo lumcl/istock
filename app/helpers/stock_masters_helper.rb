@@ -1,0 +1,2 @@
+module StockMastersHelper
+end

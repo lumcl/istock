@@ -1,0 +1,12 @@
+%h3= t('edit_user')
+%h5
+  = link_to t('show'), @user
+  \|
+  = link_to t('back'), users_path
+
+= render 'form'
+
+%h5
+  = link_to t('show'), @user
+  \|
+  = link_to t('back'), users_path

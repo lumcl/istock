@@ -1,0 +1,12 @@
+%h3= t('attributes.stock_tran')
+%h5
+  = link_to t('edit'), edit_stock_tran_path(@stock_tran)
+  \|
+  = link_to t('back'), stock_trans_path
+
+= render partial: 'layouts/show', :locals => {object: @stock_tran}
+
+%h5
+  = link_to t('edit'), edit_stock_tran_path(@stock_tran)
+  \|
+  = link_to t('back'), stock_trans_path
