@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160307012420) do
+ActiveRecord::Schema.define(version: 20160309070915) do
 
   create_table "barcode", id: false, force: :cascade do |t|
     t.string   "uuid",                           null: false
@@ -105,6 +105,7 @@ ActiveRecord::Schema.define(version: 20160307012420) do
     t.string   "updated_mac"
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
+    t.text     "reason"
   end
 
   add_index "stock_tran", ["barcode_id"], name: "index_stock_tran_on_barcode_id"
