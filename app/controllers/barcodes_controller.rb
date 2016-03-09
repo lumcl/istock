@@ -184,6 +184,7 @@ class BarcodesController < ApplicationController
     zpl_command = Barcode.finish_goods_label hash
     socket.write zpl_command
     socket.close
+    redirect_to repeat_printer_barcodes_url
   end
 
   private

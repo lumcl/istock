@@ -84,6 +84,7 @@ en:
     pallet_cnt: '棧板'
     container: '容器'
     unlink_pallet: '解除棧板'
+    print_label: '打印標籤'
 
     stock_in: '入庫'
     stock_out: '出库'
