@@ -247,8 +247,8 @@ class BarcodesController < ApplicationController
         :seq => barcode.seq,
         :name => barcode.name.blank? ? '' : barcode.name[0].upcase,
         :meins => barcode.stock_master.meins,
-        :seq_parent => (barcode.parent_id != 0 && barcode.name[0].upcase.eql?('B')) ? barcode.parent.seq : '',
-        :name_parent => (barcode.parent_id != 0 && barcode.name[0].upcase.eql?('P')) ? 'P' : barcode.parent.name[0].upcase,
+        :seq_parent => (barcode.parent.present? && barcode.parent_id != 0 && barcode.name[0].upcase.eql?('B')) ? barcode.parent.seq : '',
+        :name_parent => (barcode.parent.present? && barcode.parent_id != 0 && barcode.name[0].upcase.eql?('P')) ? 'P' : barcode.parent.name[0].upcase,
         :factory => barcode.stock_master.werks
     }
     zpl_command = Barcode.finish_goods_label hash
