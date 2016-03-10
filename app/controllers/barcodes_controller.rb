@@ -78,7 +78,7 @@ class BarcodesController < ApplicationController
 
   def unlink_pallet
     barcode = Barcode.find params[:id]
-    barcode.parent_id = ''
+    barcode.parent_id = '0'
     barcode.save
     redirect_to scan_barcodes_url(barcode: barcode.uuid)
   end
