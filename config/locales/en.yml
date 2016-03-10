@@ -43,6 +43,7 @@ en:
   print_receipt: '入庫單'
   work_order_receipt: '工單成品入庫'
   new_printer: '創建打印機'
+  search: '查询'
 
   attributes:
     barcode: '條碼'
@@ -86,6 +87,7 @@ en:
     unlink_pallet: '解除棧板'
     print_label: '打印標籤'
     status: '狀態'
+    onhand: '庫存查詢'
 
     stock_in: '入庫'
     stock_out: '出库'
