@@ -1,0 +1,89 @@
+.panel.panel-default
+  .panel-heading
+    條碼信息查詢及解除箱
+  .panel-body{style:'padding-bottom: 0px;'}
+    = form_tag(split_box_barcodes_url, method: 'get', class: 'form-horizontal', id:'form_id') do
+      .form-group
+        .col-xs-12
+          = text_field_tag :barcode, nil,placeholder: t('attributes.barcode'), class: 'form-control', value:'', id: 'barcode'
+
+    - if @barcode.present?
+      %dl.dl-horizontal.mobile
+        %dd
+          = link_to t('attributes.print_label'), repeat_printer_barcodes_url({barcode: @barcode.uuid})
+        %dt= t('attributes.barcode')
+        %dd= @barcode.seq
+        %dt= t('attributes.matnr')
+        %dd
+          = link_to @barcode.stock_master.matnr, matnr_onhand_enquiries_path({matnr: @barcode.stock_master.matnr})
+          = link_to t('attributes.onhand'), matnr_onhand_enquiries_path({matnr: @barcode.stock_master.matnr})
+        %dt= t('attributes.charg')
+        %dd= @barcode.stock_master.charg
+        %dt= t('attributes.maktx')
+        %dd= @barcode.stock_master.maktx
+        %dt= t('attributes.matkl')
+        %dd= @barcode.stock_master.matkl
+        %dt= t('attributes.aufnr')
+        %dd= @barcode.stock_master.aufnr
+        %dt= t('attributes.budat')
+        %dd= @barcode.stock_master.budat
+        %dt= 'DCODE'
+        %dd= @barcode.stock_master.datecode
+        %dt= t('attributes.werks')
+        %dd= @barcode.stock_master.werks
+        %dt= t('attributes.mblnr')
+        %dd
+          = @barcode.stock_master.mjahr
+          = @barcode.stock_master.mblnr
+          = @barcode.stock_master.zeile
+        %dt= t('attributes.lgort')
+        %dd= @barcode.storage.present? ? @barcode.storage : @barcode.lgort
+        %dt= t('attributes.container')
+        %dd= @barcode.name.upcase
+        %dt= t('attributes.menge')
+        %dd
+          = @qty
+          = @barcode.stock_master.meins
+        - if @barcode.parent.present?
+          %dt= t('attributes.pallet_cnt')
+          %dd
+            = @barcode.parent.seq
+            = link_to t('attributes.unlink_pallet'), unlink_pallet_barcode_url(@barcode.uuid)
+    %hr
+    - if @barcodes.present?
+      = "此棧板上有#{@barcodes.size}箱"
+      .table-responsive
+        %table.table.table-striped.table-condensed.small
+          %thead
+            %tr
+              %th
+              %th= t('attributes.barcode')
+              %th= t('attributes.menge')
+          %tbody
+            - i = 0
+            - @barcodes.each do |row|
+              - i += 1
+              %tr
+                %td= i
+                %td= row.seq
+                %td
+                  = row.menge
+                  = @barcode.stock_master.meins
+    %hr
+    - if (!@barcode.parent.present? && @barcode.name.eql?('box'))
+      = "此箱上有#{@barcode.menge}"
+      .table-responsive
+        %table.table.table-striped.table-condensed.small
+          %thead
+            %tr
+              %th
+              %th= t('attributes.barcode')
+              %th= t('attributes.menge')
+          %tbody
+            - i = 0
+            - 5.times() do |x|
+              - i += 1
+              %tr
+                %td= i
+                %td= x
+                %td= x
