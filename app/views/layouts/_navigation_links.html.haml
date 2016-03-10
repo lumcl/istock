@@ -16,7 +16,7 @@
     %ul.dropdown-menu
       %li= link_to '查詢及解除棧板', scan_barcodes_path
       %li= link_to '上貨架及轉貨架', in_barcodes_path
-      %li= link_to '下貨架出庫', out_stock_trans_path
+      %li= link_to '下貨架出庫', out_barcodes_path
 
   %li= link_to '打印機', printers_path if current_user.role == 'admin'
   %li= link_to '打印', repeat_printer_barcodes_path if current_user.role == 'admin'
