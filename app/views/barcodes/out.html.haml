@@ -1,0 +1,167 @@
+%link{href: '/js/DataTables/datatables.min.css', rel:'stylesheet'}
+%script{src: '/js/DataTables/datatables.min.js'}
+
+.panel.panel-default
+  .panel-heading
+    倉庫掃描發貨及下架
+    .pull-right
+      %a#InitPageLink{href:'#'}
+        清除資料
+  .panel-body{style:'padding-bottom: 0px;'}
+    = form_tag(out_scan_barcodes_url, method: 'get', class: 'form-horizontal', remote: true, id:'form_id') do
+      .form-group
+        .col-xs-12
+          = text_field_tag :barcode, nil,placeholder: t('attributes.barcode'), class: 'form-control', value: '', id: 'barcode'
+
+    總數量:<input type='text' id='qty' disabled='disabled' value='0' size='5px'/>
+    總箱量:<input type='text' id='box' disabled='disabled' value='0' size='5px'/>
+    總棧板:<input type='text' id='pallet' disabled='disabled' value='0' size='5px'/>
+    <input id='takeaway' class="btn btn-primary btn-sm" type="button">
+  .table-responsive
+    %table.table.table-striped.small.table-condensed#grid_view{width:'100%'}
+
+:javascript
+  var dataSet = [];
+
+  function init_page(){
+    $('#qty').val('0');
+    $('#box').val('0');
+    $('#pallet').val('0');
+    $('#takeaway').attr("disabled", false);
+    $('#takeaway').attr("value", '確認下貨架');
+    $('#grid_view').DataTable().clear().draw();
+  }
+
+  $(document).ready(function () {
+
+    if ($('#storage').val() == ""){
+      $('#storage').focus();
+    }
+    else{
+      $('#barcode').focus();
+    }
+
+     $('#grid_view').DataTable( {
+        data: dataSet,
+        info: false,
+        ordering: true,
+        paging: false,
+        searching: false,
+        scrollY: '50vh',
+        scrollX: true,
+        scrollCollapse: true,
+        columns: [
+            { title: "UUID" },
+            { title: "標籤" },
+            { title: "產品" },
+            { title: "數量" },
+            { title: "批次" },
+            { title: "包裝" }
+        ],
+        columnDefs: [
+          {
+            targets: [0],
+            visible: false,
+            searchable: false
+          }
+        ]
+    });
+
+    $('#grid_view tbody').on( 'click', 'button.close', function () {
+      if(confirm("确定要清空数据吗？")){
+        table_row = $('#grid_view').DataTable().row($(this).parents('tr'));
+        $('#qty').val(parseFloat($('#qty').val()) - table_row.data()[3])
+        if (table_row.data()[5] == 'P'){
+          $('#pallet').val(parseInt($('#pallet').val()) - 1)
+        }
+        else{
+          $('#box').val(parseInt($('#box').val()) - 1)
+        }
+        $('#grid_view').DataTable()
+          .row($(this).parents('tr'))
+          .remove()
+          .draw();
+      };
+    });
+
+    $('#barcode').change(function(){
+      if ($('#barcode').val() != ""){
+        $.ajax({
+          url: 'out_scan',
+          data: {
+            barcode: $('#barcode').val()
+          }
+        }).done(function(json){
+          data = $('#grid_view').DataTable().data()
+          for (index = 0; index < json.length; index++) {
+            found = false;
+            for(i = 0; i < data.length; i++){
+              if (data[i][0] == json[index].uuid){
+                found = true;
+                break;
+              }
+            }
+            if (found == false) {
+              $('#grid_view').DataTable().row.add([
+                json[index].uuid,
+                json[index].seq,
+                json[index].matnr,
+                json[index].menge,
+                json[index].charg,
+                json[index].name[0].toUpperCase(),
+              ]).draw(false);
+              $('#qty').val(parseFloat($('#qty').val()) + json[index].menge)
+              if (json[index].name[0].toUpperCase() == 'P'){
+                $('#pallet').val(parseInt($('#pallet').val()) + 1)
+              }
+              else{
+                $('#box').val(parseInt($('#box').val()) + 1)
+              }
+            }
+          }
+        });
+      }
+      $('#barcode').val("");
+    });
+
+    $('#InitPageLink').click(function(){
+      init_page();
+    });
+
+    $('#takeaway').click(function(){
+      $(this).attr("disabled", true);
+      $(this).attr("value", '保存中...');
+      _uuid = '';
+      dataStore = $('#grid_view').DataTable().data();
+      for(i = 0; i < dataStore.length; i++){
+        if (_uuid != ''){
+          _uuid = _uuid + ',';
+        }
+        _uuid = _uuid + dataStore[i][0]
+      }
+
+      ajax = $.ajax({
+        url: 'out_takeaway',
+        method: 'post',
+        data: {
+          uuid: _uuid,
+          storage: $('#storage').val()
+        }
+      });
+      ajax.done(function(response){
+        if (response.barcode_uuid == 'success'){
+          alert("倉庫掃描發貨及下架成功");
+          init_page();
+        }
+        else{
+          alert("注意系統錯誤, 請再一次上傳\n\nbarcode_uuid:"+response.barcode_uuid + "\n" +response.error_message);
+          $('#takeaway').attr("disabled", false);
+          $('#takeaway').attr("value", '確認下貨架');
+        }
+      });
+    });
+
+    init_page();
+
+  })
+

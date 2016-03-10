@@ -15,6 +15,9 @@ Rails.application.routes.draw do
     post :in_putaway, on: :collection
     get :repeat_printer, on: :collection
     get :printer_label, on: :collection
+    get :out, on: :collection
+    get :out_scan, on: :collection
+    post :out_takeaway, on: :collection
   end
 
   resources :stock_masters
