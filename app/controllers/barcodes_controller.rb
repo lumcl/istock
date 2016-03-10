@@ -201,7 +201,7 @@ class BarcodesController < ApplicationController
                                prdln:       barcode.stock_master.prdln,
                                ebeln:       barcode.stock_master.ebeln,
                                ebelp:       barcode.stock_master.ebelp,
-                               mtype:       'in_putway',
+                               mtype:       'out_takeway',
                                created_by:  current_user.email,
                                created_ip:  request.ip,
                                created_mac: '',
@@ -209,8 +209,8 @@ class BarcodesController < ApplicationController
                                updated_ip:  request.ip,
                                updated_mac: '',
                            })
-          barcode.status  = 'putaway'
-          barcode.storage = params[:storage]
+          barcode.status  = 'takeaway'
+          barcode.menge = 0
           barcode.save
         }
       rescue Exception => e
