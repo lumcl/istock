@@ -8,7 +8,7 @@
           = text_field_tag :storage, nil,placeholder: t('attributes.storage'), class: 'form-control', value:params[:storage], id: 'storage'
       .form-group
         .col-xs-12
-          = text_field_tag :werks, nil,placeholder: t('attributes.werks'), class: 'form-control', value:params[:werks], id: 'werks'
+          = select_options_tag :werks, Figaro.env.plant.split(","), class: 'form-control', value: params[:werks], prompt: t('attributes.werks')
       .form-group
         .col-xs-12
           = button_tag class: 'btn btn-default btn-form-submit', type: 'button' do

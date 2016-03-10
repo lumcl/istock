@@ -6,7 +6,7 @@ class EnquiriesController < ApplicationController
         select a.matnr,a.maktx,a.matkl,a.charg,a.werks,a.meins,a.aufnr,a.datecode,a.budat,
                b.uuid,b.name,b.menge,a.werks ||'-'|| nvl(b.storage,b.lgort)storage,b.status,b.seq
           from stock_master a
-            join barcode b on b.stock_master_id = a.uuid and b.status <> 'stock_out'
+            join barcode b on b.stock_master_id = a.uuid and b.status <> 'takeaway'
             where a.matnr = ? and a.werks like '%#{params[:werks].upcase}%'
       "
       @barcodes = StockMaster.find_by_sql [sql, params[:matnr].upcase]
@@ -37,7 +37,7 @@ class EnquiriesController < ApplicationController
         select a.matnr,a.maktx,a.matkl,a.charg,a.werks,a.meins,a.aufnr,a.datecode,a.budat,
                b.uuid,b.name,b.menge,a.werks ||'-'|| nvl(b.storage,b.lgort)storage,b.status,b.seq
           from stock_master a
-            join barcode b on b.stock_master_id = a.uuid and b.status <> 'stock_out'
+            join barcode b on b.stock_master_id = a.uuid and b.status <> 'takeaway'
             where b.storage = ? and a.werks like '%#{params[:werks].upcase}%'
       "
       @barcodes = StockMaster.find_by_sql [sql, params[:storage].upcase]
@@ -58,7 +58,7 @@ class EnquiriesController < ApplicationController
         select a.matnr,a.maktx,a.matkl,a.charg,a.werks,a.meins,a.aufnr,a.datecode,a.budat,
                b.uuid,b.name,b.menge,nvl(b.storage,b.lgort)storage,b.status,b.seq
           from stock_master a
-            join barcode b on b.stock_master_id = a.uuid and b.status <> 'stock_out' and b.storage is null
+            join barcode b on b.stock_master_id = a.uuid and b.status <> 'takeaway' and b.storage is null
             where a.werks = ? and a.matnr like '%#{params[:matnr].upcase}%'
       "
       @barcodes = StockMaster.find_by_sql [sql, params[:werks].upcase]
