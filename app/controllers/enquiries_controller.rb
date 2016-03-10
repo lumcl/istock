@@ -52,4 +52,23 @@ class EnquiriesController < ApplicationController
     end
   end
 
+  def not_putaway
+    if params[:werks]
+      sql       = "
+        select a.matnr,a.maktx,a.matkl,a.charg,a.werks,a.meins,a.aufnr,a.datecode,a.budat,
+               b.uuid,b.name,b.menge,nvl(b.storage,b.lgort)storage,b.status,b.seq
+          from stock_master a
+            join barcode b on b.stock_master_id = a.uuid and b.status <> 'stock_out' and b.storage is null
+            where a.werks = ? and a.matnr like '%#{params[:matnr].upcase}%'
+      "
+      @barcodes = StockMaster.find_by_sql [sql, params[:werks].upcase]
+      @storages   = {}
+      @barcodes.each { |barcode|
+        @storages[barcode.matnr] = [0,0,0,barcode.meins] unless @storages.key?(barcode.matnr)
+        @storages[barcode.matnr][0] += barcode.menge
+        barcode.name == 'box' ? @storages[barcode.matnr][1] += 1 : @storages[barcode.matnr][2] += 1
+      }
+    end
+  end
+
 end

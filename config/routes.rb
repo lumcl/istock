@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :enquiries do
     get :matnr_onhand, on: :collection
     get :storage_onhand, on: :collection
+    get :not_putaway, on: :collection
   end
 
   resources :printers
