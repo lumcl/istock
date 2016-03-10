@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
 
+  resources :enquiries do
+    get :matnr_onhand, on: :collection
+  end
+
   resources :printers
 
   resources :barcodes do

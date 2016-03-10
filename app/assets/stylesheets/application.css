@@ -13,10 +13,13 @@
  * require_tree .
  * require_self
  */
-
+/*
 th{background-color: #F8F8F8;}
 a:hover {color: red; text-decoration:underline;}
 .container-form{max-width: 768px;}
+*/
+a:hover {color: red; text-decoration:none;}
+
 @media print{.no-print{display: none !important;}}
 .dl-horizontal.mobile dt {
   float:left;
