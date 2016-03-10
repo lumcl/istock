@@ -30,4 +30,26 @@ class EnquiriesController < ApplicationController
       }
     end
   end
+
+  def storage_onhand
+    if params[:storage]
+      sql       = "
+        select a.matnr,a.maktx,a.matkl,a.charg,a.werks,a.meins,a.aufnr,a.datecode,a.budat,
+               b.uuid,b.name,b.menge,a.werks ||'-'|| nvl(b.storage,b.lgort)storage,b.status,b.seq
+          from stock_master a
+            join barcode b on b.stock_master_id = a.uuid and b.status <> 'stock_out'
+            where b.storage = ? and a.werks like '%#{params[:werks].upcase}%'
+      "
+      @barcodes = StockMaster.find_by_sql [sql, params[:storage].upcase]
+
+      @storages   = {}
+      @barcodes.each { |barcode|
+        storage_matnr = "#{barcode.storage}_#{barcode.matnr}"
+        @storages[storage_matnr] = [0,0,0,barcode.meins] unless @storages.key?(storage_matnr)
+        @storages[storage_matnr][0] += barcode.menge
+        barcode.name == 'box' ? @storages[storage_matnr][1] += 1 : @storages[storage_matnr][2] += 1
+      }
+    end
+  end
+
 end

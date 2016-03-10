@@ -1,11 +1,11 @@
 .panel.panel-default
   .panel-heading
-    料號查詢
+    貨架查詢
   .panel-body{style:'padding-bottom: 0px;'}
-    = form_tag(matnr_onhand_enquiries_path, method: 'get', class: 'form-horizontal', id:'form_id') do
+    = form_tag(storage_onhand_enquiries_path, method: 'get', class: 'form-horizontal', id:'form_id') do
       .form-group
         .col-xs-12
-          = text_field_tag :matnr, nil,placeholder: t('attributes.matnr'), class: 'form-control', value:params[:matnr], id: 'matnr'
+          = text_field_tag :storage, nil,placeholder: t('attributes.storage'), class: 'form-control', value:params[:storage], id: 'storage'
       .form-group
         .col-xs-12
           = text_field_tag :werks, nil,placeholder: t('attributes.werks'), class: 'form-control', value:params[:werks], id: 'werks'
@@ -14,42 +14,28 @@
           = button_tag class: 'btn btn-default btn-form-submit', type: 'button' do
             = t('search')
             %span.glyphicon.glyphicon-search
-    - if @barcodes.present?
-      %dl.dl-horizontal.mobile
-        %dd
-        %dt= t('attributes.matnr')
-        %dd= @barcodes.first.matnr
-        %dt= t('attributes.maktx')
-        %dd= @barcodes.first.maktx
-        %dt= t('attributes.matkl')
-        %dd= @barcodes.first.matkl
-        %dt= t('attributes.menge')
-        %dd
-          = @htable[:menge]
-          = @barcodes.first.meins
-        %dt= t('attributes.box_cnt')
-        %dd= @htable[:box_cnt]
-        %dt= t('attributes.pallet_cnt')
-        %dd= @htable[:pallet_cnt]
 
-        - @htable[:storages].keys.sort.each do |key|
+    - if @barcodes.present?
+      .panel-group#accordion{role:'tablist'}
+        - @storages.keys.sort.each do |key|
           .panel.panel-default
             .panel-heading{role:'tab', id: "heading#{key}"}
               %a{role:'button', href:"#collapse#{key}", data:{toggle:'collapse', parent:'#accordion'}, aria:{expanded:'true', controls:"collapse#{key}"}}
-                = key[(key.split('-')[0].size) + 1..key.size]
+                = key.split('_')[1]
                 .pull-right
-                  = @htable[:storages][key][0]
-                  = @barcodes.first.meins
+                  = @storages[key][0]
+                  = @storages[key][3]
               .small
                 = key.split('-')[0]
                 .tab-1
                   = t('attributes.box_cnt')
                   = ':'
-                  = @htable[:storages][key][1]
+                  = @storages[key][1]
                   .pull-right
                     = t('attributes.pallet_cnt')
                     = ':'
-                    = @htable[:storages][key][2]
+                    = @storages[key][2]
+
             .panel-collapse.collapse{id:"collapse#{key}", role:'tabpanel', aria:{labelledby:"heading#{key}"}}
               .table-responsive
                 %table.table.small.table-condensed#grid_view
@@ -64,7 +50,7 @@
                       %th= t('attributes.budat')
                       %th= t('attributes.status')
                   %tbody
-                    - @barcodes.select{|b| b.storage.eql?(key)}.each do |barcode|
+                    - @barcodes.select{|b| "#{b.storage}_#{b.matnr}".eql?(key)}.each do |barcode|
                       %tr
                         %td
                           = barcode.name[0].upcase

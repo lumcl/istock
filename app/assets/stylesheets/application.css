@@ -19,6 +19,8 @@ a:hover {color: red; text-decoration:underline;}
 .container-form{max-width: 768px;}
 */
 a:hover {color: red; text-decoration:none;}
+.tab-2{padding-left: 2em; display: inline;}
+.tab-1{padding-left: 1em; display: inline;}
 
 @media print{.no-print{display: none !important;}}
 .dl-horizontal.mobile dt {
