@@ -70,14 +70,13 @@
                   = row.menge
                   = @barcode.stock_master.meins
     %hr
-    - if (!@barcode.parent.present? && @barcode.name.eql?('box'))
+    - if (!@barcodes.present? && !@barcode.parent.present? && @barcode.name.eql?('box'))
       = "此箱上有#{@barcode.menge}"
       .table-responsive
         %table.table.table-striped.table-condensed.small
           %thead
             %tr
               %th
-              %th= t('attributes.barcode')
               %th= t('attributes.menge')
           %tbody
             - i = 0
@@ -85,5 +84,203 @@
               - i += 1
               %tr
                 %td= i
-                %td= x
-                %td= x
+                %td
+                  %input{type:'text', id:"qty_#{i}", value:'0', size:'5px'}
+                  %input{type:'hidden',id:"menge",value:"#{@barcode.menge}"}
+
+:javascript
+
+  $(document).ready(function () {
+    var qt = 0;
+    var meng = $('#menge').val()
+
+    $('#qty_1').change(function(){
+      if ($('#qty_1').val() != "" && parseInt($('#qty_1').val()) != 0){
+          qt = parseInt($('#qty_1').val());
+          if (qt > meng){
+              $('#qty_1').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_2').val() != "" && parseInt($('#qty_2').val()) != 0){
+          qt = qt + parseInt($('#qty_2').val());
+          if (qt > meng){
+              $('#qty_2').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_3').val() != "" && parseInt($('#qty_3').val()) != 0){
+          qt = qt + parseInt($('#qty_3').val());
+          if (qt > meng){
+              $('#qty_3').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_4').val() != "" && parseInt($('#qty_4').val()) != 0){
+          qt = qt + parseInt($('#qty_4').val());
+          if (qt > meng){
+              $('#qty_4').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_5').val() != "" && parseInt($('#qty_5').val()) != 0){
+          qt = qt + parseInt($('#qty_5').val());
+          if (qt > meng){
+              $('#qty_5').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+    });
+
+    $('#qty_2').change(function(){
+      if ($('#qty_1').val() != "" && parseInt($('#qty_1').val()) != 0){
+          qt = parseInt($('#qty_1').val());
+          if (qt > meng){
+              $('#qty_1').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_2').val() != "" && parseInt($('#qty_2').val()) != 0){
+          qt = qt + parseInt($('#qty_2').val());
+          if (qt > meng){
+              $('#qty_2').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_3').val() != "" && parseInt($('#qty_3').val()) != 0){
+          qt = qt + parseInt($('#qty_3').val());
+          if (qt > meng){
+              $('#qty_3').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_4').val() != "" && parseInt($('#qty_4').val()) != 0){
+          qt = qt + parseInt($('#qty_4').val());
+          if (qt > meng){
+              $('#qty_4').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_5').val() != "" && parseInt($('#qty_5').val()) != 0){
+          qt = qt + parseInt($('#qty_5').val());
+          if (qt > meng){
+              $('#qty_5').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+    });
+
+    $('#qty_3').change(function(){
+      if ($('#qty_1').val() != "" && parseInt($('#qty_1').val()) != 0){
+          qt = parseInt($('#qty_1').val());
+          if (qt > meng){
+              $('#qty_1').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_2').val() != "" && parseInt($('#qty_2').val()) != 0){
+          qt = qt + parseInt($('#qty_2').val());
+          if (qt > meng){
+              $('#qty_2').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_3').val() != "" && parseInt($('#qty_3').val()) != 0){
+          qt = qt + parseInt($('#qty_3').val());
+          if (qt > meng){
+              $('#qty_3').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_4').val() != "" && parseInt($('#qty_4').val()) != 0){
+          qt = qt + parseInt($('#qty_4').val());
+          if (qt > meng){
+              $('#qty_4').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_5').val() != "" && parseInt($('#qty_5').val()) != 0){
+          qt = qt + parseInt($('#qty_5').val());
+          if (qt > meng){
+              $('#qty_5').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+    });
+
+    $('#qty_4').change(function(){
+      if ($('#qty_1').val() != "" && parseInt($('#qty_1').val()) != 0){
+          qt = parseInt($('#qty_1').val());
+          if (qt > meng){
+              $('#qty_1').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_2').val() != "" && parseInt($('#qty_2').val()) != 0){
+          qt = qt + parseInt($('#qty_2').val());
+          if (qt > meng){
+              $('#qty_2').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_3').val() != "" && parseInt($('#qty_3').val()) != 0){
+          qt = qt + parseInt($('#qty_3').val());
+          if (qt > meng){
+              $('#qty_3').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_4').val() != "" && parseInt($('#qty_4').val()) != 0){
+          qt = qt + parseInt($('#qty_4').val());
+          if (qt > meng){
+              $('#qty_4').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_5').val() != "" && parseInt($('#qty_5').val()) != 0){
+          qt = qt + parseInt($('#qty_5').val());
+          if (qt > meng){
+              $('#qty_5').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+    });
+
+    $('#qty_5').change(function(){
+      if ($('#qty_1').val() != "" && parseInt($('#qty_1').val()) != 0){
+          qt = parseInt($('#qty_1').val());
+          if (qt > meng){
+              $('#qty_1').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_2').val() != "" && parseInt($('#qty_2').val()) != 0){
+          qt = qt + parseInt($('#qty_2').val());
+          if (qt > meng){
+              $('#qty_2').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_3').val() != "" && parseInt($('#qty_3').val()) != 0){
+          qt = qt + parseInt($('#qty_3').val());
+          if (qt > meng){
+              $('#qty_3').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_4').val() != "" && parseInt($('#qty_4').val()) != 0){
+          qt = qt + parseInt($('#qty_4').val());
+          if (qt > meng){
+              $('#qty_4').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+      if ($('#qty_5').val() != "" && parseInt($('#qty_5').val()) != 0){
+          qt = qt + parseInt($('#qty_5').val());
+          if (qt > meng){
+              $('#qty_5').val('0');
+              alert("數量不能大余"+meng);
+          }
+      }
+    });
+  })
