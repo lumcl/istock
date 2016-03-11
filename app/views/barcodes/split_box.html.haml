@@ -70,23 +70,33 @@
                   = row.menge
                   = @barcode.stock_master.meins
     %hr
-    - if (!@barcodes.present? && !@barcode.parent.present? && @barcode.name.eql?('box'))
-      = "此箱上有#{@barcode.menge}"
-      .table-responsive
-        %table.table.table-striped.table-condensed.small
-          %thead
-            %tr
-              %th
-              %th= t('attributes.menge')
-          %tbody
-            - i = 0
-            - 5.times() do |x|
-              - i += 1
-              %tr
-                %td= i
-                %td
-                  %input{type:'text', id:"qty_#{i}", value:'0', size:'5px'}
-                  %input{type:'hidden',id:"menge",value:"#{@barcode.menge}"}
+      - if (!@barcodes.present?)
+      - if (!@barcodes.present? && !@barcode.parent.present? && @barcode.name.eql?('box'))
+        = form_tag(unlink_box_barcodes_url, method: 'get', class: 'form-horizontal', remote: true, id:'form_id') do
+          = "此箱上有#{@barcode.menge}"
+          .table-responsive
+            %table.table.table-striped.table-condensed.small
+              %thead
+                %tr
+                  %th
+                  %th= t('attributes.menge')
+              %tbody
+                - i = 0
+                - 5.times() do |x|
+                  - i += 1
+                  %tr
+                    %td= i
+                    %td
+                      %input{type:'text', id:"qty_#{i}", value:'0', size:'5px'}
+                      %input{type:'hidden',id:"menge",value:"#{@barcode.menge}"}
+          = hidden_field_tag :uuid,@barcode.uuid
+          .form-group
+            = label_tag 'printer_id', t('attributes.printer')
+            = select_tag 'printer_id', options_from_collection_for_select(Printer.all.select(:uuid,:code), 'uuid', 'code', current_user.printer_id), class: 'select optional form-control'
+          .form-group
+            = button_tag class: 'btn btn-default btn-form-submit', type: 'button' do
+              打印外箱條碼標籤
+              %span.glyphicon.glyphicon-print
 
 :javascript
 

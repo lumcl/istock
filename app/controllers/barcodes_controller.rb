@@ -99,7 +99,37 @@ class BarcodesController < ApplicationController
   end
 
   def unlink_box
+    qty1 = params[:qty_1]
+    qty2 = params[:qty_2]
+    qty3 = params[:qty_3]
+    qty4 = params[:qty_4]
+    qty5 = params[:qty_5]
 
+    barcode = Barcode.where(:uuid => params[:uuid]).first
+
+    printer = Printer.find params[:printer_id]
+    socket = TCPSocket.new(printer.ip, printer.port)
+
+    hash = {
+        :id => barcode.id,
+        :date => barcode.stock_master.budat,
+        :date_code => barcode.stock_master.datecode,
+        :lot_no => barcode.stock_master.charg,
+        :mo => barcode.stock_master.aufnr,
+        :qty => barcode.menge,
+        :product_no => barcode.stock_master.matnr,
+        :seq => barcode.seq,
+        :name => barcode.name.blank? ? '' : barcode.name[0].upcase,
+        :meins => barcode.stock_master.meins,
+        :seq_parent => barcode.parent.present? ? barcode.parent.seq : '',
+        :name_parent => barcode.parent.present? ? '' : '',
+        :factory => barcode.stock_master.werks
+    }
+    zpl_command = Barcode.finish_goods_label hash
+    socket.write zpl_command
+    socket.close
+
+    redirect_to split_box_barcodes_url
   end
 
   def in
