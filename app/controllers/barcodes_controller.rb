@@ -16,8 +16,8 @@ class BarcodesController < ApplicationController
       if @barcode.name.eql?('box')
         @qty = @barcode.menge
       else
-        @qty = Barcode.where(parent_id: @barcode.uuid).sum(:menge)
-        @barcodes = Barcode.where(parent_id: @barcode.uuid).select(:seq,:menge)
+        @qty      = Barcode.where(parent_id: @barcode.uuid).sum(:menge)
+        @barcodes = Barcode.where(parent_id: @barcode.uuid).select(:seq, :menge)
       end
     end
   end
@@ -93,44 +93,72 @@ class BarcodesController < ApplicationController
   end
 
   def unlink_pallet
-    barcode = Barcode.find params[:id]
+    barcode           = Barcode.find params[:id]
     barcode.parent_id = '0'
     barcode.save
     redirect_to scan_barcodes_url(barcode: barcode.uuid)
   end
 
   def unlink_box
-    qty1 = params[:qty_1]
-    qty2 = params[:qty_2]
-    qty3 = params[:qty_3]
-    qty4 = params[:qty_4]
-    qty5 = params[:qty_5]
 
-    barcode = Barcode.where(:uuid => params[:uuid]).first
+    message = '分箱成功!'
+    uuid = ''
+    qtys       = params[:qty]
+    old_barcode = Barcode.find params[:uuid]
+    menge       = old_barcode.menge
+    barcodes = []
 
-    printer = Printer.find params[:printer_id]
-    socket = TCPSocket.new(printer.ip, printer.port)
+    begin
+      Barcode.transaction do
 
-    hash = {
-        :id => barcode.id,
-        :date => barcode.stock_master.budat,
-        :date_code => barcode.stock_master.datecode,
-        :lot_no => barcode.stock_master.charg,
-        :mo => barcode.stock_master.aufnr,
-        :qty => barcode.menge,
-        :product_no => barcode.stock_master.matnr,
-        :seq => barcode.seq,
-        :name => barcode.name.blank? ? '' : barcode.name[0].upcase,
-        :meins => barcode.stock_master.meins,
-        :seq_parent => barcode.parent.present? ? barcode.parent.seq : '',
-        :name_parent => barcode.parent.present? ? '' : '',
-        :factory => barcode.stock_master.werks
+        qtys.select { |b| b.to_f > 0 }.each { |qty|
+          new_barcode       = old_barcode.dup
+          new_barcode.seq   = nil
+          new_barcode.menge = qty
+          new_barcode.save
+          menge = menge - qty
+          barcodes.append new_barcode
+        }
+        new_barcode       = old_barcode.dup
+        new_barcode.seq   = nil
+        new_barcode.menge = menge
+        new_barcode.save
+        barcodes.append new_barcode
+
+        old_barcode.status = 'split_box'
+        old_barcode.menge = 0
+        old_barcode.save
+      end
+    rescue Exception(e)
+      message = '分箱失敗!'
+      uuid = old_barcode.uuid
+      barcodes.clear
+    end
+
+    barcodes.each { |barcode|
+      printer = Printer.find params[:printer_id]
+      socket = TCPSocket.new(printer.ip, printer.port)
+      hash = {
+          :id => barcode.id,
+          :date => barcode.stock_master.budat,
+          :date_code => barcode.stock_master.datecode,
+          :lot_no => barcode.stock_master.charg,
+          :mo => barcode.stock_master.aufnr,
+          :qty => barcode.menge,
+          :product_no => barcode.stock_master.matnr,
+          :seq => barcode.seq,
+          :name => barcode.name.blank? ? '' : barcode.name[0].upcase,
+          :meins => barcode.stock_master.meins,
+          :seq_parent => barcode.parent.present? ? barcode.parent.seq : '',
+          :name_parent => barcode.parent.present? ? '' : '',
+          :factory => barcode.stock_master.werks
+      }
+      zpl_command = Barcode.finish_goods_label hash
+      socket.write zpl_command
+      socket.close
     }
-    zpl_command = Barcode.finish_goods_label hash
-    socket.write zpl_command
-    socket.close
 
-    redirect_to split_box_barcodes_url
+    redirect_to split_box_barcodes_url(barcode: uuid), notice: message
   end
 
   def in
@@ -259,8 +287,8 @@ class BarcodesController < ApplicationController
                                updated_ip:  request.ip,
                                updated_mac: '',
                            })
-          barcode.status  = 'takeaway'
-          barcode.menge = 0
+          barcode.status = 'takeaway'
+          barcode.menge  = 0
           barcode.save
         }
       rescue Exception => e
@@ -284,22 +312,22 @@ class BarcodesController < ApplicationController
     barcode = Barcode.where(:uuid => params[:uuid]).first
 
     printer = Printer.find params[:printer_id]
-    socket = TCPSocket.new(printer.ip, printer.port)
+    socket  = TCPSocket.new(printer.ip, printer.port)
 
-    hash = {
-        :id => barcode.id,
-        :date => barcode.stock_master.budat,
-        :date_code => barcode.stock_master.datecode,
-        :lot_no => barcode.stock_master.charg,
-        :mo => barcode.stock_master.aufnr,
-        :qty => barcode.menge,
-        :product_no => barcode.stock_master.matnr,
-        :seq => barcode.seq,
-        :name => barcode.name.blank? ? '' : barcode.name[0].upcase,
-        :meins => barcode.stock_master.meins,
-        :seq_parent => barcode.parent.present? ? barcode.parent.seq : '',
+    hash        = {
+        :id          => barcode.id,
+        :date        => barcode.stock_master.budat,
+        :date_code   => barcode.stock_master.datecode,
+        :lot_no      => barcode.stock_master.charg,
+        :mo          => barcode.stock_master.aufnr,
+        :qty         => barcode.menge,
+        :product_no  => barcode.stock_master.matnr,
+        :seq         => barcode.seq,
+        :name        => barcode.name.blank? ? '' : barcode.name[0].upcase,
+        :meins       => barcode.stock_master.meins,
+        :seq_parent  => barcode.parent.present? ? barcode.parent.seq : '',
         :name_parent => barcode.parent.present? ? '' : '',
-        :factory => barcode.stock_master.werks
+        :factory     => barcode.stock_master.werks
     }
     zpl_command = Barcode.finish_goods_label hash
     socket.write zpl_command
