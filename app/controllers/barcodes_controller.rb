@@ -27,14 +27,15 @@ class BarcodesController < ApplicationController
       @barcode = Barcode.find_by_uuid(params[:barcode]) if params[:barcode].size == 32
       @barcode = Barcode.find_by_seq(params[:barcode]) if @barcode.blank?
     end
-    if @barcode.present?
-      if @barcode.name.eql?('box')
-        @qty = @barcode.menge
-      else
-        @qty = Barcode.where(parent_id: @barcode.uuid).sum(:menge)
-        @barcodes = Barcode.where(parent_id: @barcode.uuid).select(:seq,:menge)
-      end
-    end
+
+    # if @barcode.present?
+    #   if @barcode.name.eql?('box')
+    #     @qty = @barcode.menge
+    #   else
+    #     @qty = Barcode.where(parent_id: @barcode.uuid).sum(:menge)
+    #     @barcodes = Barcode.where(parent_id: @barcode.uuid).select(:seq,:menge)
+    #   end
+    # end
   end
 
   # GET /barcodes/1

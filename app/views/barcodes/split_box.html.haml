@@ -1,6 +1,6 @@
 .panel.panel-default
   .panel-heading
-    條碼信息查詢及解除箱
+    分箱動作
   .panel-body{style:'padding-bottom: 0px;'}
     = form_tag(split_box_barcodes_url, method: 'get', class: 'form-horizontal', id:'form_id') do
       .form-group
@@ -49,248 +49,56 @@
           %dd
             = @barcode.parent.seq
             = link_to t('attributes.unlink_pallet'), unlink_pallet_barcode_url(@barcode.uuid)
-    %hr
-    - if @barcodes.present?
-      = "此棧板上有#{@barcodes.size}箱"
-      .table-responsive
-        %table.table.table-striped.table-condensed.small
-          %thead
-            %tr
-              %th
-              %th= t('attributes.barcode')
-              %th= t('attributes.menge')
-          %tbody
-            - i = 0
-            - @barcodes.each do |row|
-              - i += 1
-              %tr
-                %td= i
-                %td= row.seq
-                %td
-                  = row.menge
-                  = @barcode.stock_master.meins
-    %hr
-      - if (!@barcodes.present?)
-      - if (!@barcodes.present? && !@barcode.parent.present? && @barcode.name.eql?('box'))
+
+          = link_to '請先解除棧板鏈接再做分箱動作', unlink_pallet_barcode_url(@barcode.uuid)
+      - unless @barcode.name.eql?('box')
+        .text-danger
+          您掃描的不是箱子條碼, 無法進行拆箱, 請掃描箱子上的條碼.
+
+      - if @barcode.parent.blank? and @barcode.name.eql?('box') and @barcode.menge > 0
+        %hr
+        %h5 請填入要分拆的數量
         = form_tag(unlink_box_barcodes_url, method: 'get', class: 'form-horizontal', remote: true, id:'form_id') do
-          = "此箱上有#{@barcode.menge}"
-          .table-responsive
-            %table.table.table-striped.table-condensed.small
-              %thead
-                %tr
-                  %th
-                  %th= t('attributes.menge')
-              %tbody
-                - i = 0
-                - 5.times() do |x|
-                  - i += 1
-                  %tr
-                    %td= i
-                    %td
-                      %input{type:'text', id:"qty_#{i}", value:'0', size:'5px'}
-                      %input{type:'hidden',id:"menge",value:"#{@barcode.menge}"}
-          = hidden_field_tag :uuid,@barcode.uuid
+          = hidden_field_tag :uuid, @barcode.uuid
+          = hidden_field_tag :menge, @barcode.menge
+          %dl.dl-horizontal.mobile
+            - (1..5).each do |i|
+              .form-group
+                .col-sm-12
+                  %dt
+                    = t('attributes.box_cnt')
+                    = i
+                  %dd
+                    = text_field_tag 'qty[]', nil, placeholder: t('attributes.menge'), type:'number',class: 'form-control inputqty', value:'', id: "qty_#{i}"
           .form-group
-            = label_tag 'printer_id', t('attributes.printer')
-            = select_tag 'printer_id', options_from_collection_for_select(Printer.all.select(:uuid,:code), 'uuid', 'code', current_user.printer_id), class: 'select optional form-control'
+            .col-sm-12
+              = label_tag 'printer_id', t('attributes.printer')
+              = select_tag 'printer_id', options_from_collection_for_select(Printer.all.select(:uuid,:code), 'uuid', 'code', current_user.printer_id), class: 'select optional form-control'
           .form-group
-            = button_tag class: 'btn btn-default btn-form-submit', type: 'button' do
-              打印外箱條碼標籤
-              %span.glyphicon.glyphicon-print
+            .col-sm-12
+              = button_tag class: 'btn btn-primary btn-form-submit form-control', type: 'button' do
+                打印外箱條碼標籤
+                %span.glyphicon.glyphicon-print
+
 
 :javascript
 
   $(document).ready(function () {
-    var qt = 0;
-    var meng = $('#menge').val()
+    menge = parseFloat($('#menge').val());
 
-    $('#qty_1').change(function(){
-      if ($('#qty_1').val() != "" && parseInt($('#qty_1').val()) != 0){
-          qt = parseInt($('#qty_1').val());
-          if (qt > meng){
-              $('#qty_1').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_2').val() != "" && parseInt($('#qty_2').val()) != 0){
-          qt = qt + parseInt($('#qty_2').val());
-          if (qt > meng){
-              $('#qty_2').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_3').val() != "" && parseInt($('#qty_3').val()) != 0){
-          qt = qt + parseInt($('#qty_3').val());
-          if (qt > meng){
-              $('#qty_3').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_4').val() != "" && parseInt($('#qty_4').val()) != 0){
-          qt = qt + parseInt($('#qty_4').val());
-          if (qt > meng){
-              $('#qty_4').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_5').val() != "" && parseInt($('#qty_5').val()) != 0){
-          qt = qt + parseInt($('#qty_5').val());
-          if (qt > meng){
-              $('#qty_5').val('0');
-              alert("數量不能大余"+meng);
-          }
+    $('.inputqty').change(function(){
+      input_qty = 0;
+      $('.inputqty').each(function (){
+        if ($(this).val() != ''){
+          input_qty += parseFloat($(this).val());
+        }
+      });
+
+      if (input_qty > menge){
+        alert('總數不能大於'+menge);
+        $(this).val('');
+        $('#'+this.id).focus();
       }
     });
 
-    $('#qty_2').change(function(){
-      if ($('#qty_1').val() != "" && parseInt($('#qty_1').val()) != 0){
-          qt = parseInt($('#qty_1').val());
-          if (qt > meng){
-              $('#qty_1').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_2').val() != "" && parseInt($('#qty_2').val()) != 0){
-          qt = qt + parseInt($('#qty_2').val());
-          if (qt > meng){
-              $('#qty_2').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_3').val() != "" && parseInt($('#qty_3').val()) != 0){
-          qt = qt + parseInt($('#qty_3').val());
-          if (qt > meng){
-              $('#qty_3').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_4').val() != "" && parseInt($('#qty_4').val()) != 0){
-          qt = qt + parseInt($('#qty_4').val());
-          if (qt > meng){
-              $('#qty_4').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_5').val() != "" && parseInt($('#qty_5').val()) != 0){
-          qt = qt + parseInt($('#qty_5').val());
-          if (qt > meng){
-              $('#qty_5').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-    });
-
-    $('#qty_3').change(function(){
-      if ($('#qty_1').val() != "" && parseInt($('#qty_1').val()) != 0){
-          qt = parseInt($('#qty_1').val());
-          if (qt > meng){
-              $('#qty_1').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_2').val() != "" && parseInt($('#qty_2').val()) != 0){
-          qt = qt + parseInt($('#qty_2').val());
-          if (qt > meng){
-              $('#qty_2').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_3').val() != "" && parseInt($('#qty_3').val()) != 0){
-          qt = qt + parseInt($('#qty_3').val());
-          if (qt > meng){
-              $('#qty_3').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_4').val() != "" && parseInt($('#qty_4').val()) != 0){
-          qt = qt + parseInt($('#qty_4').val());
-          if (qt > meng){
-              $('#qty_4').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_5').val() != "" && parseInt($('#qty_5').val()) != 0){
-          qt = qt + parseInt($('#qty_5').val());
-          if (qt > meng){
-              $('#qty_5').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-    });
-
-    $('#qty_4').change(function(){
-      if ($('#qty_1').val() != "" && parseInt($('#qty_1').val()) != 0){
-          qt = parseInt($('#qty_1').val());
-          if (qt > meng){
-              $('#qty_1').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_2').val() != "" && parseInt($('#qty_2').val()) != 0){
-          qt = qt + parseInt($('#qty_2').val());
-          if (qt > meng){
-              $('#qty_2').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_3').val() != "" && parseInt($('#qty_3').val()) != 0){
-          qt = qt + parseInt($('#qty_3').val());
-          if (qt > meng){
-              $('#qty_3').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_4').val() != "" && parseInt($('#qty_4').val()) != 0){
-          qt = qt + parseInt($('#qty_4').val());
-          if (qt > meng){
-              $('#qty_4').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_5').val() != "" && parseInt($('#qty_5').val()) != 0){
-          qt = qt + parseInt($('#qty_5').val());
-          if (qt > meng){
-              $('#qty_5').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-    });
-
-    $('#qty_5').change(function(){
-      if ($('#qty_1').val() != "" && parseInt($('#qty_1').val()) != 0){
-          qt = parseInt($('#qty_1').val());
-          if (qt > meng){
-              $('#qty_1').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_2').val() != "" && parseInt($('#qty_2').val()) != 0){
-          qt = qt + parseInt($('#qty_2').val());
-          if (qt > meng){
-              $('#qty_2').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_3').val() != "" && parseInt($('#qty_3').val()) != 0){
-          qt = qt + parseInt($('#qty_3').val());
-          if (qt > meng){
-              $('#qty_3').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_4').val() != "" && parseInt($('#qty_4').val()) != 0){
-          qt = qt + parseInt($('#qty_4').val());
-          if (qt > meng){
-              $('#qty_4').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-      if ($('#qty_5').val() != "" && parseInt($('#qty_5').val()) != 0){
-          qt = qt + parseInt($('#qty_5').val());
-          if (qt > meng){
-              $('#qty_5').val('0');
-              alert("數量不能大余"+meng);
-          }
-      }
-    });
   })
