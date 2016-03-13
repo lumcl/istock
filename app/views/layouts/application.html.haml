@@ -10,6 +10,7 @@
     %link{href: '/css/bootstrap.min.css', rel:'stylesheet'}
     %link{href: '/css/bootstrap-datetimepicker.min.css', rel:'stylesheet'}
     %link{href: '/css/bootstrap-editable.css', rel:'stylesheet'}
+    %link{href: '/css/application.css', rel:'stylesheet'}
     %script{src: '/js/jquery.min.js'}
     %script{src: '/js/jquery_ujs.js'}
     %script{src: '/js/bootstrap.min.js'}
@@ -18,9 +19,7 @@
     %script{src: '/js/bootstrap3-autocomplete-input.min.js'}
     %script{src: '/js/bootstrap3-typeahead.min.js'}
     %script{src: '/js/bootstrap-editable.min.js'}
-
-    = stylesheet_link_tag 'application'
-    = javascript_include_tag 'application'
+    %script{src: '/js/application.js'}
 
     = csrf_meta_tags
   %body
