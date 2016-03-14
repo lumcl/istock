@@ -137,8 +137,8 @@ class BarcodesController < ApplicationController
           old_barcode.menge = 0
           old_barcode.save!
         end
-      rescue Exception(e)
-        message = '分箱失敗!'
+      rescue Exception => error
+        message = "分箱失敗!, #{error.message}"
         uuid = old_barcode.uuid
         barcodes.clear
       end
