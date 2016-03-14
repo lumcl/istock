@@ -143,9 +143,10 @@ class BarcodesController < ApplicationController
         barcodes.clear
       end
 
+      printer = Printer.find params[:printer_id]
+      socket = TCPSocket.new(printer.ip, printer.port)
+
       Barcode.where(uuid: barcodes).order(seq: :asc).each { |barcode|
-        printer = Printer.find params[:printer_id]
-        socket = TCPSocket.new(printer.ip, printer.port)
         hash = {
             :id => barcode.id,
             :date => barcode.stock_master.budat,
@@ -163,8 +164,9 @@ class BarcodesController < ApplicationController
         }
         zpl_command = Barcode.finish_goods_label hash
         socket.write zpl_command
-        socket.close
       }
+
+      socket.close
     end
     redirect_to split_box_barcodes_url(barcode: uuid), notice: message
   end
