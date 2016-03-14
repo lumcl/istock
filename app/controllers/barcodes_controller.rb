@@ -125,13 +125,13 @@ class BarcodesController < ApplicationController
             new_barcode.menge = qty.to_f
             new_barcode.save!
             menge = menge - qty.to_f
-            barcodes.append new_barcode
+            barcodes.append new_barcode.uuid
           }
           new_barcode       = old_barcode.dup
           new_barcode.seq   = nil
           new_barcode.menge = menge
           new_barcode.save!
-          barcodes.append new_barcode
+          barcodes.append new_barcode.uuid
 
           old_barcode.status = 'split_box'
           old_barcode.menge = 0
@@ -143,7 +143,7 @@ class BarcodesController < ApplicationController
         barcodes.clear
       end
 
-      barcodes.each { |barcode|
+      Barcode.where(uuid: barcodes).order(seq: :asc).each { |barcode|
         printer = Printer.find params[:printer_id]
         socket = TCPSocket.new(printer.ip, printer.port)
         hash = {
