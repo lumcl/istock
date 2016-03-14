@@ -42,7 +42,7 @@
         %dd= @barcode.name.upcase
         %dt= t('attributes.menge')
         %dd
-          = @qty
+          = @barcode.menge
           = @barcode.stock_master.meins
         - if @barcode.parent.present?
           %dt= t('attributes.pallet_cnt')

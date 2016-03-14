@@ -110,24 +110,23 @@ class BarcodesController < ApplicationController
 
     begin
       Barcode.transaction do
-
         qtys.select { |b| b.to_f > 0 }.each { |qty|
           new_barcode       = old_barcode.dup
           new_barcode.seq   = nil
-          new_barcode.menge = qty
-          new_barcode.save
-          menge = menge - qty
+          new_barcode.menge = qty.to_f
+          new_barcode.save!
+          menge = menge - qty.to_f
           barcodes.append new_barcode
         }
         new_barcode       = old_barcode.dup
         new_barcode.seq   = nil
         new_barcode.menge = menge
-        new_barcode.save
+        new_barcode.save!
         barcodes.append new_barcode
 
         old_barcode.status = 'split_box'
         old_barcode.menge = 0
-        old_barcode.save
+        old_barcode.save!
       end
     rescue Exception(e)
       message = '分箱失敗!'
