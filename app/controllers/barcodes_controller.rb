@@ -108,55 +108,64 @@ class BarcodesController < ApplicationController
     menge       = old_barcode.menge
     barcodes = []
 
-    begin
-      Barcode.transaction do
-        qtys.select { |b| b.to_f > 0 }.each { |qty|
-          new_barcode       = old_barcode.dup
-          new_barcode.seq   = nil
-          new_barcode.menge = qty.to_f
-          new_barcode.save!
-          menge = menge - qty.to_f
-          barcodes.append new_barcode
-        }
-        new_barcode       = old_barcode.dup
-        new_barcode.seq   = nil
-        new_barcode.menge = menge
-        new_barcode.save!
-        barcodes.append new_barcode
-
-        old_barcode.status = 'split_box'
-        old_barcode.menge = 0
-        old_barcode.save!
-      end
-    rescue Exception(e)
-      message = '分箱失敗!'
-      uuid = old_barcode.uuid
-      barcodes.clear
-    end
-
-    barcodes.each { |barcode|
-      printer = Printer.find params[:printer_id]
-      socket = TCPSocket.new(printer.ip, printer.port)
-      hash = {
-          :id => barcode.id,
-          :date => barcode.stock_master.budat,
-          :date_code => barcode.stock_master.datecode,
-          :lot_no => barcode.stock_master.charg,
-          :mo => barcode.stock_master.aufnr,
-          :qty => barcode.menge,
-          :product_no => barcode.stock_master.matnr,
-          :seq => barcode.seq,
-          :name => barcode.name.blank? ? '' : barcode.name[0].upcase,
-          :meins => barcode.stock_master.meins,
-          :seq_parent => barcode.parent.present? ? barcode.parent.seq : '',
-          :name_parent => barcode.parent.present? ? '' : '',
-          :factory => barcode.stock_master.werks
-      }
-      zpl_command = Barcode.finish_goods_label hash
-      socket.write zpl_command
-      socket.close
+    input_qty = 0.0
+    qtys.select { |b| b.to_f > 0 }.each { |qty|
+      input_qty += qty.to_f
     }
 
+    if input_qty > menge
+      message = '分箱總數量大於原箱數量!'
+      uuid = old_barcode.uuid
+    else
+      begin
+        Barcode.transaction do
+          qtys.select { |b| b.to_f > 0 }.each { |qty|
+            new_barcode       = old_barcode.dup
+            new_barcode.seq   = nil
+            new_barcode.menge = qty.to_f
+            new_barcode.save!
+            menge = menge - qty.to_f
+            barcodes.append new_barcode
+          }
+          new_barcode       = old_barcode.dup
+          new_barcode.seq   = nil
+          new_barcode.menge = menge
+          new_barcode.save!
+          barcodes.append new_barcode
+
+          old_barcode.status = 'split_box'
+          old_barcode.menge = 0
+          old_barcode.save!
+        end
+      rescue Exception(e)
+        message = '分箱失敗!'
+        uuid = old_barcode.uuid
+        barcodes.clear
+      end
+
+      barcodes.each { |barcode|
+        printer = Printer.find params[:printer_id]
+        socket = TCPSocket.new(printer.ip, printer.port)
+        hash = {
+            :id => barcode.id,
+            :date => barcode.stock_master.budat,
+            :date_code => barcode.stock_master.datecode,
+            :lot_no => barcode.stock_master.charg,
+            :mo => barcode.stock_master.aufnr,
+            :qty => barcode.menge,
+            :product_no => barcode.stock_master.matnr,
+            :seq => barcode.seq,
+            :name => barcode.name.blank? ? '' : barcode.name[0].upcase,
+            :meins => barcode.stock_master.meins,
+            :seq_parent => barcode.parent.present? ? barcode.parent.seq : '',
+            :name_parent => barcode.parent.present? ? '' : '',
+            :factory => barcode.stock_master.werks
+        }
+        zpl_command = Barcode.finish_goods_label hash
+        socket.write zpl_command
+        socket.close
+      }
+    end
     redirect_to split_box_barcodes_url(barcode: uuid), notice: message
   end
 
