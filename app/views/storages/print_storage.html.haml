@@ -1,0 +1,22 @@
+.panel.panel-default
+  .panel-heading
+    條碼信息查詢
+  .panel-body{style:'padding-bottom: 0px;'}
+    = form_tag(printer_storage_label_storages_url, method: 'get', class: 'form-horizontal', id:'form_id') do
+      .form-group
+        .col-xs-12
+          = text_field_tag :storage, nil,placeholder: t('attributes.barcode'), class: 'form-control', value:'', id: 'storage'
+    - if @storage.present?
+      %dl.dl-horizontal.mobile
+        %dt= t('attributes.barcode')
+        %dd= @storage.name
+      %hr
+      = form_tag(printer_storage_label_storages_url, method: 'get',id:'form_id') do
+        = hidden_field_tag :uuid,@storage.uuid
+        .form-group
+          = label_tag 'printer_id', t('attributes.printer')
+          = select_tag 'printer_id', options_from_collection_for_select(Printer.all.select(:uuid,:code), 'uuid', 'code', current_user.printer_id), class: 'select optional form-control'
+        .form-group
+          = button_tag class: 'btn btn-default btn-form-submit', type: 'button' do
+            打印外箱條碼標籤
+            %span.glyphicon.glyphicon-print

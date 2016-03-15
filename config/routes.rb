@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
 
+  resources :storages do
+    get :print, on: :collection
+    get :print_storage, on: :collection
+    get :printer_storage_label, on: :collection
+  end
+
   resources :enquiries do
     get :matnr_onhand, on: :collection
     get :storage_onhand, on: :collection

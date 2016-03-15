@@ -74,6 +74,23 @@ class Barcode < ActiveRecord::Base
     finish_goods_label_end lab
   end
 
+  def self.finish_storage_label(hash)
+    lab1 = "
+      ^XA~TA000~JSN^LT0^MNW^MTT^PON^PMN^LH0,0^JMA^PR4,4~SD20^JUS^LRN^CI0^XZ
+      ^XA
+      ^MMT
+      ^PW945
+      ^LL0768
+      ^LS0
+      ^FT531,574^BQN,2,10
+      ^FDLA,#{hash[:name]}^FS
+      ^FT368,721^A0B,130,74^FH\^FD#{hash[:name]}^FS
+      ^FT135,763^A0B,75,74^FH\^FDLeader Electronics Inc^FS
+      ^PQ1,0,1,Y^XZ
+    "
+    finish_goods_label_end lab1
+  end
+
   def self.finish_goods_label_end(str)
      str
   end

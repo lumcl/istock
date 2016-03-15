@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160309070915) do
+ActiveRecord::Schema.define(version: 20160315093153) do
 
   create_table "barcode", id: false, force: :cascade do |t|
     t.string   "uuid",                           null: false
@@ -25,8 +25,8 @@ ActiveRecord::Schema.define(version: 20160309070915) do
     t.integer  "menge",           precision: 38
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
-    t.string   "storage"
     t.integer  "seq",             precision: 38
+    t.string   "storage"
   end
 
   add_index "barcode", ["name"], name: "index_barcode_on_name"
@@ -112,8 +112,8 @@ ActiveRecord::Schema.define(version: 20160309070915) do
   add_index "stock_tran", ["master_id"], name: "index_stock_tran_on_master_id"
   add_index "stock_tran", ["uuid"], name: "index_stock_tran_on_uuid", unique: true
 
-  create_table "storage", id: false, force: :cascade do |t|
-    t.string   "uuid",       null: false
+  create_table "storage", force: :cascade do |t|
+    t.string   "uuid"
     t.string   "code"
     t.string   "name"
     t.string   "werks"
@@ -151,7 +151,5 @@ ActiveRecord::Schema.define(version: 20160309070915) do
   add_index "user", ["reset_password_token"], name: "i_user_reset_password_token", unique: true
   add_index "user", ["username"], name: "index_user_on_username", unique: true
   add_index "user", ["uuid"], name: "index_user_on_uuid", unique: true
-
-  add_synonym "users", "istock.user", force: true
 
 end
