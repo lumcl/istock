@@ -1,0 +1,34 @@
+%h3= t('attributes.storage')
+
+%h5
+  = link_to t('new_storage'), new_storage_path
+
+= form_tag(storages_url, method: 'get', class: 'form-inline') do
+  = text_field_tag :name, nil, placeholder: t('attributes.name'), class: 'form-control input-sm', value: params[:name]
+  = button_tag class: 'btn btn-success btn-form-submit', type: 'button' do
+    %span.glyphicon.glyphicon-search
+
+.table-responsive
+  %table.table.table-hover.table-condensed.table-bordered
+    %thead
+      %tr
+        %th= t('action')
+        %th= t('attributes.code')
+        %th= t('attributes.name')
+        %th= t('attributes.werks')
+    %tbody
+      - @storages.each do |storage|
+        %tr
+          %td
+            = link_to t('edit'), edit_storage_path(storage)
+            |
+            = link_to t('delete'), storage, :method => :delete, :data => { :confirm => t('confirm_delete')}
+
+          %td= storage.code
+          %td= storage.name
+          %td= storage.werks
+
+%h5
+  = link_to t('new_storage'), new_storage_path
+
+= paginate @storages
