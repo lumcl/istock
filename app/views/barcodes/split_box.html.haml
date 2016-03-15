@@ -15,8 +15,8 @@
         %dd= @barcode.seq
         %dt= t('attributes.matnr')
         %dd
-          = link_to @barcode.stock_master.matnr, matnr_onhand_enquiries_path({matnr: @barcode.stock_master.matnr})
-          = link_to t('attributes.onhand'), matnr_onhand_enquiries_path({matnr: @barcode.stock_master.matnr})
+          = link_to @barcode.stock_master.matnr, matnr_onhand_enquiries_path({matnr: @barcode.stock_master.matnr,werks:@barcode.stock_master.werks})
+          = link_to t('attributes.onhand'), matnr_onhand_enquiries_path({matnr: @barcode.stock_master.matnr,werks:@barcode.stock_master.werks})
         %dt= t('attributes.charg')
         %dd= @barcode.stock_master.charg
         %dt= t('attributes.maktx')
