@@ -1,0 +1,13 @@
+= simple_form_for(@storage) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :code
+    = f.input :name
+    = f.input :werks
+
+  .form-actions
+    .clearfix
+    = button_tag class: 'btn btn-danger', type: 'button', onclick: "$(this).button('loading');this.form.submit();", data:{loading_text: t('saving')} do
+      %span.glyphicon.glyphicon-floppy-save
+      = t('save')

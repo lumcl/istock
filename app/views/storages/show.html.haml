@@ -1,0 +1,12 @@
+%h3= t('attributes.storage')
+%h5
+  = link_to t('edit'), edit_storage_path(@storage)
+  \|
+  = link_to t('back'), storages_path
+
+= render partial: 'layouts/show', :locals => {object: @storage}
+
+%h5
+  = link_to t('edit'), edit_storage_path(@storage)
+  \|
+  = link_to t('back'), storages_path
