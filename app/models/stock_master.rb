@@ -145,6 +145,9 @@ class StockMaster < ActiveRecord::Base
           :budat      => record.budat,
       )
 
+      #这是正常的
+      pallet = Barcode.new
+      no_of_box1 = 0
       (1..params[:no_of_pallet1].to_i).each do |i|
         pallet = Barcode.create(
             :stock_master_id => stock_master.id,
@@ -156,6 +159,7 @@ class StockMaster < ActiveRecord::Base
             :menge           => 0
         )
         (1..params[:pallet_qty].to_i).each do |i|
+          no_of_box1 += 1
           Barcode.create(
               :stock_master_id => stock_master.id,
               :name            => 'box',
@@ -165,6 +169,39 @@ class StockMaster < ActiveRecord::Base
               :status          => 'created',
               :menge           => params[:box_qty].to_i
           )
+          break if no_of_box1 == params[:no_of_box1].to_i
+        end
+      end
+
+      #这是代表还有一些箱子么有被打印出来, 或者还有尾数栈板
+      if params[:no_of_box2].to_i > 0
+        #这是代表没有尾数栈板
+        if params[:pallet_qty2].to_i == 0
+          #打印箱标签
+          (1..params[:no_of_box2].to_i).each do |i|
+            #检查最后一箱是否是尾箱还是整箱
+            if (i == params[:no_of_box2].to_i) and (params[:box_qty2].to_i != 0)
+              Barcode.create(
+                  :stock_master_id => stock_master.id,
+                  :name            => 'box',
+                  :parent_id       => pallet.id,
+                  :child           => true,
+                  :lgort           => record.lgort,
+                  :status          => 'created',
+                  :menge           => params[:box_qty2].to_i
+              )
+            else
+              Barcode.create(
+                  :stock_master_id => stock_master.id,
+                  :name            => 'box',
+                  :parent_id       => pallet.id,
+                  :child           => true,
+                  :lgort           => record.lgort,
+                  :status          => 'created',
+                  :menge           => params[:box_qty].to_i
+              )
+            end
+          end
         end
       end
 
@@ -180,7 +217,6 @@ class StockMaster < ActiveRecord::Base
             :menge           => 0
         )
       end
-
       (1..params[:pallet_qty2].to_i).each do |i|
         #检查最后一箱是否是尾箱还是整箱
         if (i == params[:pallet_qty2].to_i) and (params[:box_qty2].to_i != 0)
