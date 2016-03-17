@@ -2,7 +2,7 @@
   .panel-heading
     儲存架位置信息查詢
   .panel-body{style:'padding-bottom: 0px;'}
-    = form_tag(printer_storage_storages_url, method: 'get', class: 'form-horizontal', id:'form_id') do
+    = form_tag(print_storage_storages_url, method: 'get', class: 'form-horizontal', id:'form_id') do
       .form-group
         .col-xs-12
           = text_field_tag :storage, nil,placeholder: t('attributes.storage'), class: 'form-control', value:'', id: 'storage'
