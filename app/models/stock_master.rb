@@ -116,7 +116,7 @@ class StockMaster < ActiveRecord::Base
           :factory     => stock_master.werks
       }
       zpl_command = Barcode.finish_goods_label hash
-      #socket.write zpl_command
+      socket.write zpl_command
     end
     socket.close
 
