@@ -149,11 +149,13 @@ class BarcodesController < ApplicationController
             menge = menge - qty.to_f
             barcodes.append new_barcode.uuid
           }
-          new_barcode       = old_barcode.dup
-          new_barcode.seq   = nil
-          new_barcode.menge = menge
-          new_barcode.save!
-          barcodes.append new_barcode.uuid
+          if old_barcode.name.eql?('box') and menge != 0
+             new_barcode       = old_barcode.dup
+             new_barcode.seq   = nil
+             new_barcode.menge = menge
+             new_barcode.save!
+             barcodes.append new_barcode.uuid
+          end
 
           old_barcode.status = 'split_box'
           old_barcode.menge = 0
