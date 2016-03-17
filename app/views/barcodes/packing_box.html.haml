@@ -1,0 +1,104 @@
+.panel.panel-default
+  .panel-heading
+    填箱動作
+  .panel-body{style:'padding-bottom: 0px;'}
+    = form_tag(packing_box_barcodes_url, method: 'get', class: 'form-horizontal', id:'form_id') do
+      .form-group
+        .col-xs-12
+          = text_field_tag :barcode, nil,placeholder: t('attributes.barcode'), class: 'form-control', value:'', id: 'barcode'
+
+    - if @barcode.present?
+      %dl.dl-horizontal.mobile
+        %dd
+          = link_to t('attributes.print_label'), repeat_printer_barcodes_url({barcode: @barcode.uuid})
+        %dt= t('attributes.barcode')
+        %dd= @barcode.seq
+        %dt= t('attributes.matnr')
+        %dd
+          = link_to @barcode.stock_master.matnr, matnr_onhand_enquiries_path({matnr: @barcode.stock_master.matnr,werks:@barcode.stock_master.werks     })
+          = link_to t('attributes.onhand'), matnr_onhand_enquiries_path({matnr: @barcode.stock_master.matnr,werks:@barcode.stock_master.werks})
+        %dt= t('attributes.charg')
+        %dd= @barcode.stock_master.charg
+        %dt= t('attributes.maktx')
+        %dd= @barcode.stock_master.maktx
+        %dt= t('attributes.matkl')
+        %dd= @barcode.stock_master.matkl
+        %dt= t('attributes.aufnr')
+        %dd= @barcode.stock_master.aufnr
+        %dt= t('attributes.budat')
+        %dd= @barcode.stock_master.budat
+        %dt= 'DCODE'
+        %dd= @barcode.stock_master.datecode
+        %dt= t('attributes.werks')
+        %dd= @barcode.stock_master.werks
+        %dt= t('attributes.mblnr')
+        %dd
+          = @barcode.stock_master.mjahr
+          = @barcode.stock_master.mblnr
+          = @barcode.stock_master.zeile
+        %dt= t('attributes.lgort')
+        %dd= @barcode.storage.present? ? @barcode.storage : @barcode.lgort
+        %dt= t('attributes.container')
+        %dd= @barcode.name.upcase
+        %dt= t('attributes.menge')
+        %dd
+          = @barcode.menge
+          = @barcode.stock_master.meins
+        - if @barcode.parent.present?
+          %dt= t('attributes.pallet_cnt')
+          %dd
+            = @barcode.parent.seq
+            = link_to t('attributes.unlink_pallet'), unlink_pallet_barcode_url(@barcode.uuid)
+
+          = link_to '請先解除棧板鏈接再做分箱動作', unlink_pallet_barcode_url(@barcode.uuid)
+      - unless @barcode.name.eql?('box')
+        .text-danger
+          您掃描的不是箱子條碼, 無法進行拆箱, 請掃描箱子上的條碼.
+
+      - if @barcode.parent.blank? and @barcode.name.eql?('box') and @barcode.menge > 0
+        %hr
+        %h5 請填入要填充的數量
+        = form_tag(unlink_box_barcodes_url, method: 'get', class: 'form-horizontal', remote: true, id:'form_id') do
+          = hidden_field_tag :uuid, @barcode.uuid
+          = hidden_field_tag :menge, @barcode.menge
+          %dl.dl-horizontal.mobile
+            - (1..5).each do |i|
+              .form-group
+                .col-sm-12
+                  %dt
+                    = t('attributes.box_cnt')
+                    = i
+                  %dd
+                    = text_field_tag 'qty[]', nil, placeholder: t('attributes.menge'), type:'number',class: 'form-control inputqty', value:'', id: "qty_#{i}"
+          .form-group
+            .col-sm-12
+              = label_tag 'printer_id', t('attributes.printer')
+              = select_tag 'printer_id', options_from_collection_for_select(Printer.all.select(:uuid,:code), 'uuid', 'code', current_user.printer_id), class: 'select optional form-control'
+          .form-group
+            .col-sm-12
+              = button_tag class: 'btn btn-primary btn-form-submit form-control', type: 'button' do
+                打印外箱條碼標籤
+                %span.glyphicon.glyphicon-print
+
+
+:javascript
+
+  $(document).ready(function () {
+    menge = parseFloat($('#menge').val());
+
+    $('.inputqty').change(function(){
+      input_qty = 0;
+      $('.inputqty').each(function (){
+        if ($(this).val() != ''){
+          input_qty += parseFloat($(this).val());
+        }
+      });
+
+      if (input_qty > menge){
+        alert('總數不能大於'+menge);
+        $(this).val('');
+        $('#'+this.id).focus();
+      }
+    });
+
+  })

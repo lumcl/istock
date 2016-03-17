@@ -341,6 +341,13 @@ class BarcodesController < ApplicationController
     end
   end
 
+  def packing_box
+    if params[:barcode].present?
+      @barcode = Barcode.find_by_uuid(params[:barcode]) if params[:barcode].size == 32
+      @barcode = Barcode.find_by_seq(params[:barcode]) if @barcode.blank?
+    end
+  end
+
   def printer_label
     barcode = Barcode.where(:uuid => params[:uuid]).first
 
