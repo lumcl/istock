@@ -27,6 +27,10 @@ Rails.application.routes.draw do
     post :out_takeaway, on: :collection
     get :split_box, on: :collection
     get :unlink_box, on: :collection
+    get :unlink_pallet, on: :member
+    get :link_box, on: :collection
+    get :link_pallet, on: :collection
+    get :link_scan, on: :collection
   end
 
   resources :stock_masters

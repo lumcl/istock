@@ -1,14 +1,14 @@
 .panel.panel-default
   .panel-heading
-    條碼信息查詢
+    儲存架位置信息查詢
   .panel-body{style:'padding-bottom: 0px;'}
-    = form_tag(printer_storage_label_storages_url, method: 'get', class: 'form-horizontal', id:'form_id') do
+    = form_tag(printer_storage_storages_url, method: 'get', class: 'form-horizontal', id:'form_id') do
       .form-group
         .col-xs-12
-          = text_field_tag :storage, nil,placeholder: t('attributes.barcode'), class: 'form-control', value:'', id: 'storage'
+          = text_field_tag :storage, nil,placeholder: t('attributes.storage'), class: 'form-control', value:'', id: 'storage'
     - if @storage.present?
       %dl.dl-horizontal.mobile
-        %dt= t('attributes.barcode')
+        %dt= t('attributes.storage')
         %dd= @storage.name
       %hr
       = form_tag(printer_storage_label_storages_url, method: 'get',id:'form_id') do

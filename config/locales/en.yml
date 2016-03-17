@@ -44,6 +44,7 @@ en:
   work_order_receipt: '工單成品入庫'
   new_printer: '創建打印機'
   search: '查询'
+  print: '打印'
 
   attributes:
     barcode: '條碼'
@@ -86,6 +87,8 @@ en:
     container: '容器'
     unlink_pallet: '解除棧板'
     unlink_box: '解除箱'
+    link_pallet: '关联棧板'
+    link_box: '关联箱'
     print_label: '打印標籤'
     status: '狀態'
     onhand: '庫存查詢'

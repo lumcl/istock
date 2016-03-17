@@ -20,6 +20,8 @@
       - @storages.each do |storage|
         %tr
           %td
+            = link_to t('print'), {:action => print_storage_storages_url, :uuid => storage.uuid,:name => storage.name}
+            |
             = link_to t('edit'), edit_storage_path(storage)
             |
             = link_to t('delete'), storage, :method => :delete, :data => { :confirm => t('confirm_delete')}

@@ -22,6 +22,21 @@ class BarcodesController < ApplicationController
     end
   end
 
+  def link_scan
+    if params[:barcode].present?
+      @barcode = Barcode.find_by_uuid(params[:barcode]) if params[:barcode].size == 32
+      @barcode = Barcode.find_by_seq(params[:barcode]) if @barcode.blank?
+    end
+    if @barcode.present?
+      if @barcode.name.eql?('box')
+        @qty = @barcode.menge
+      else
+        @qty      = Barcode.where(parent_id: @barcode.uuid).sum(:menge)
+        @barcodes = Barcode.where(parent_id: @barcode.uuid).select(:seq, :menge)
+      end
+    end
+  end
+
   def split_box
     if params[:barcode].present?
       @barcode = Barcode.find_by_uuid(params[:barcode]) if params[:barcode].size == 32
@@ -90,6 +105,13 @@ class BarcodesController < ApplicationController
       format.html { redirect_to barcodes_url, notice: 'Barcode was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+  def link_pallet
+    barcode           = Barcode.find params[:id]
+    barcode.parent_id = params[:parent_id]
+    barcode.save
+    redirect_to link_scan_barcodes_url
   end
 
   def unlink_pallet
@@ -297,6 +319,7 @@ class BarcodesController < ApplicationController
                                updated_ip:  request.ip,
                                updated_mac: '',
                            })
+          barcode.storage = ''
           barcode.status = 'takeaway'
           barcode.menge  = 0
           barcode.save

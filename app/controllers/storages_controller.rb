@@ -51,7 +51,7 @@ class StoragesController < ApplicationController
 
     respond_to do |format|
       if @storage.save
-        format.html { redirect_to @storage, notice: 'Storage was successfully created.' }
+        format.html { redirect_to storages_url, notice: 'Storage was successfully created.' }
         format.json { render :show, status: :created, location: @storage }
       else
         format.html { render :new }
@@ -92,6 +92,6 @@ class StoragesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def storage_params
-      params.require(:storage).permit(:uuid, :code, :name, :werks)
+      params.require(:storage).permit(:uuid,:code, :name, :werks)
     end
 end
