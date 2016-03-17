@@ -1,6 +1,6 @@
 class CreateStorage < ActiveRecord::Migration
   def change
-    create_table :storage do |t|
+    create_table :storage, id: false do |t|
       t.string :uuid
       t.string :CODE
       t.string :NAME
