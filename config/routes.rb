@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :saprfc_mb1bs
   resources :storages do
     get :print, on: :collection
     get :print_storage, on: :collection

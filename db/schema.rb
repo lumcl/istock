@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160315093153) do
+ActiveRecord::Schema.define(version: 20160318055235) do
 
   create_table "barcode", id: false, force: :cascade do |t|
     t.string   "uuid",                           null: false
@@ -25,8 +25,8 @@ ActiveRecord::Schema.define(version: 20160315093153) do
     t.integer  "menge",           precision: 38
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
-    t.integer  "seq",             precision: 38
     t.string   "storage"
+    t.integer  "seq",             precision: 38
   end
 
   add_index "barcode", ["name"], name: "index_barcode_on_name"
@@ -48,6 +48,34 @@ ActiveRecord::Schema.define(version: 20160315093153) do
 
   add_index "printer", ["code"], name: "index_printer_on_code"
   add_index "printer", ["uuid"], name: "index_printer_on_uuid", unique: true
+
+  create_table "saprfc_mb1b", id: false, force: :cascade do |t|
+    t.string   "uuid",                                null: false
+    t.string   "parent_id"
+    t.string   "matnr"
+    t.string   "werks"
+    t.string   "lgort"
+    t.string   "old_lgort"
+    t.string   "charg"
+    t.string   "bwart"
+    t.decimal  "menge",      precision: 15, scale: 3
+    t.string   "msg_type"
+    t.string   "msg_id"
+    t.string   "msg_number"
+    t.string   "msg_text"
+    t.string   "rfc_date"
+    t.string   "status"
+    t.string   "mjahr"
+    t.string   "mblnr"
+    t.string   "zeile"
+    t.string   "creator"
+    t.string   "updater"
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+  end
+
+  add_index "saprfc_mb1b", ["parent_id"], name: "index_saprfc_mb1b_on_parent_id"
+  add_index "saprfc_mb1b", ["uuid"], name: "index_saprfc_mb1b_on_uuid", unique: true
 
   create_table "stock_master", id: false, force: :cascade do |t|
     t.string   "uuid",                      null: false
@@ -113,7 +141,7 @@ ActiveRecord::Schema.define(version: 20160315093153) do
   add_index "stock_tran", ["uuid"], name: "index_stock_tran_on_uuid", unique: true
 
   create_table "storage", id: false, force: :cascade do |t|
-    t.string   "uuid"
+    t.string   "uuid",       null: false
     t.string   "code"
     t.string   "name"
     t.string   "werks"
@@ -151,5 +179,7 @@ ActiveRecord::Schema.define(version: 20160315093153) do
   add_index "user", ["reset_password_token"], name: "i_user_reset_password_token", unique: true
   add_index "user", ["username"], name: "index_user_on_username", unique: true
   add_index "user", ["uuid"], name: "index_user_on_uuid", unique: true
+
+  add_synonym "users", "istock.user", force: true
 
 end

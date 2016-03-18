@@ -123,12 +123,12 @@ class BarcodesController < ApplicationController
 
   def unlink_box
 
-    message = '分箱成功!'
-    uuid = ''
-    qtys       = params[:qty]
+    message     = '分箱成功!'
+    uuid        = ''
+    qtys        = params[:qty]
     old_barcode = Barcode.find params[:uuid]
     menge       = old_barcode.menge
-    barcodes = []
+    barcodes    = []
 
     input_qty = 0.0
     qtys.select { |b| b.to_f > 0 }.each { |qty|
@@ -137,7 +137,7 @@ class BarcodesController < ApplicationController
 
     if input_qty > menge
       message = '分箱總數量大於原箱數量!'
-      uuid = old_barcode.uuid
+      uuid    = old_barcode.uuid
     else
       begin
         Barcode.transaction do
@@ -150,41 +150,41 @@ class BarcodesController < ApplicationController
             barcodes.append new_barcode.uuid
           }
           if old_barcode.name.eql?('box') and menge != 0
-             new_barcode       = old_barcode.dup
-             new_barcode.seq   = nil
-             new_barcode.menge = menge
-             new_barcode.save!
-             barcodes.append new_barcode.uuid
+            new_barcode       = old_barcode.dup
+            new_barcode.seq   = nil
+            new_barcode.menge = menge
+            new_barcode.save!
+            barcodes.append new_barcode.uuid
           end
 
           old_barcode.status = 'split_box'
-          old_barcode.menge = 0
+          old_barcode.menge  = 0
           old_barcode.save!
         end
       rescue Exception => error
         message = "分箱失敗!, #{error.message}"
-        uuid = old_barcode.uuid
+        uuid    = old_barcode.uuid
         barcodes.clear
       end
 
       printer = Printer.find params[:printer_id]
-      socket = TCPSocket.new(printer.ip, printer.port)
+      socket  = TCPSocket.new(printer.ip, printer.port)
 
       Barcode.where(uuid: barcodes).order(seq: :asc).each { |barcode|
-        hash = {
-            :id => barcode.id,
-            :date => barcode.stock_master.budat,
-            :date_code => barcode.stock_master.datecode,
-            :lot_no => barcode.stock_master.charg,
-            :mo => barcode.stock_master.aufnr,
-            :qty => barcode.menge,
-            :product_no => barcode.stock_master.matnr,
-            :seq => barcode.seq,
-            :name => barcode.name.blank? ? '' : barcode.name[0].upcase,
-            :meins => barcode.stock_master.meins,
-            :seq_parent => barcode.parent.present? ? barcode.parent.seq : '',
+        hash        = {
+            :id          => barcode.id,
+            :date        => barcode.stock_master.budat,
+            :date_code   => barcode.stock_master.datecode,
+            :lot_no      => barcode.stock_master.charg,
+            :mo          => barcode.stock_master.aufnr,
+            :qty         => barcode.menge,
+            :product_no  => barcode.stock_master.matnr,
+            :seq         => barcode.seq,
+            :name        => barcode.name.blank? ? '' : barcode.name[0].upcase,
+            :meins       => barcode.stock_master.meins,
+            :seq_parent  => barcode.parent.present? ? barcode.parent.seq : '',
             :name_parent => barcode.parent.present? ? '' : '',
-            :factory => barcode.stock_master.werks
+            :factory     => barcode.stock_master.werks
         }
         zpl_command = Barcode.finish_goods_label hash
         socket.write zpl_command
@@ -224,8 +224,13 @@ class BarcodesController < ApplicationController
     barcode_uuid = ''
     StockTran.transaction do
       begin
+        receipts = {}
         barcodes.each { |barcode|
           barcode_uuid = barcode.uuid
+
+          receipts.key?(barcode.stock_master_id) ?
+              receipts[barcode.stock_master_id] += barcode.menge : receipts[barcode.stock_master_id] = barcode.menge
+
           StockTran.create({
                                master_id:   barcode.stock_master_id,
                                barcode_id:  barcode.uuid,
@@ -255,6 +260,29 @@ class BarcodesController < ApplicationController
           barcode.storage = params[:storage]
           barcode.save
         }
+
+        receipts.keys.each do |key|
+          barcode = barcodes.select { |b| b.stock_master_id == key }.first
+          lgort   = case barcode.werks
+                      when '281A'
+                        'EXFG'
+                      when '381A'
+                        'EBFG'
+                    end
+          SaprfcMb1b.create({
+                                parent_id: barcode.stock_master_id,
+                                matnr:     barcode.matnr,
+                                werks:     barcode.werks,
+                                lgort:     lgort,
+                                old_lgort: barcode.lgort,
+                                charg:     barcode.stock_master.charg,
+                                bwart:     '311',
+                                menge:     receipts[key],
+                                status:    'wait',
+                                creator:   current_user.email,
+                                updater:   current_user.email
+                            })
+        end
       rescue Exception => e
         response = {
             barcode_uuid:  barcode_uuid,
@@ -322,8 +350,8 @@ class BarcodesController < ApplicationController
                                updated_mac: '',
                            })
           barcode.storage = ''
-          barcode.status = 'takeaway'
-          barcode.menge  = 0
+          barcode.status  = 'takeaway'
+          barcode.menge   = 0
           barcode.save
         }
       rescue Exception => e
@@ -334,6 +362,7 @@ class BarcodesController < ApplicationController
       end
     end
     render json: response
+    e
   end
 
   def repeat_printer
