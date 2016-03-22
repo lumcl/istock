@@ -195,6 +195,81 @@ class BarcodesController < ApplicationController
     redirect_to split_box_barcodes_url(barcode: uuid), notice: message
   end
 
+  def packing
+
+    message = '填箱成功!'
+    uuid = ''
+    old_barcode = Barcode.find params[:uuid]
+    parent_barcode = Barcode.find params[:parent_id]
+    menge       = 0
+    barcodes = []
+
+
+    if old_barcode.menge + parent_barcode.menge > old_barcode.stock_master.menge
+      menge = old_barcode.stock_master.menge
+    else
+      menge = old_barcode.menge + parent_barcode.menge
+    end
+
+      begin
+        #被填箱更改數量
+        old_barcode.menge = menge
+        old_barcode.save
+
+        #填箱更改數量 0
+        parent_barcode.menge = 0
+        parent_barcode.status = 'packing_box'
+        parent_barcode.save
+
+        if old_barcode.menge + parent_barcode.menge > old_barcode.stock_master.menge
+          bar = Barcode.create({
+                             storage: old_barcode.storage,
+                             name: old_barcode.name,
+                             stock_master_id: old_barcode.stock_master_id,
+                             parent_id: old_barcode.parent_id,
+                             child: old_barcode.child,
+                             lgort: old_barcode.lgort,
+                             status: old_barcode.status,
+                             menge: old_barcode.menge + parent_barcode.menge - old_barcode.stock_master.menge
+                         })
+
+          barcodes.append bar.uuid
+        end
+      rescue Exception => error
+        message = "填箱失敗!, #{error.message}"
+        uuid = old_barcode.uuid
+        barcodes.clear
+      end
+
+      printer = Printer.find params[:printer_id]
+      socket = TCPSocket.new(printer.ip, printer.port)
+
+      Barcode.where(uuid: barcodes).order(seq: :asc).each { |barcode|
+        hash = {
+          :id => barcode.id,
+          :date => barcode.stock_master.budat,
+          :date_code => barcode.stock_master.datecode,
+          :lot_no => barcode.stock_master.charg,
+          :mo => barcode.stock_master.aufnr,
+          :qty => barcode.menge,
+          :product_no => barcode.stock_master.matnr,
+          :seq => barcode.seq,
+          :name => barcode.name.blank? ? '' : barcode.name[0].upcase,
+          :meins => barcode.stock_master.meins,
+          :seq_parent => barcode.parent.present? ? barcode.parent.seq : '',
+          :name_parent => barcode.parent.present? ? '' : '',
+          :factory => barcode.stock_master.werks
+        }
+        zpl_command = Barcode.finish_goods_label hash
+        #socket.write zpl_command
+      }
+
+      socket.close
+
+    redirect_to packing_box_barcodes_url(barcode: uuid), notice: message
+
+  end
+
   def in
 
   end
@@ -263,7 +338,7 @@ class BarcodesController < ApplicationController
 
         receipts.keys.each do |key|
           barcode = barcodes.select { |b| b.stock_master_id == key }.first
-          lgort   = case barcode.werks
+          lgort   = case barcode.stock_master.werks
                       when '281A'
                         'EXFG'
                       when '381A'
@@ -271,8 +346,8 @@ class BarcodesController < ApplicationController
                     end
           SaprfcMb1b.create({
                                 parent_id: barcode.stock_master_id,
-                                matnr:     barcode.matnr,
-                                werks:     barcode.werks,
+                                matnr:     barcode.stock_master.matnr,
+                                werks:     barcode.stock_master.werks,
                                 lgort:     lgort,
                                 old_lgort: barcode.lgort,
                                 charg:     barcode.stock_master.charg,

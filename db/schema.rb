@@ -25,8 +25,8 @@ ActiveRecord::Schema.define(version: 20160318055235) do
     t.integer  "menge",           precision: 38
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
-    t.string   "storage"
     t.integer  "seq",             precision: 38
+    t.string   "storage"
   end
 
   add_index "barcode", ["name"], name: "index_barcode_on_name"
@@ -141,7 +141,7 @@ ActiveRecord::Schema.define(version: 20160318055235) do
   add_index "stock_tran", ["uuid"], name: "index_stock_tran_on_uuid", unique: true
 
   create_table "storage", id: false, force: :cascade do |t|
-    t.string   "uuid",       null: false
+    t.string   "uuid"
     t.string   "code"
     t.string   "name"
     t.string   "werks"

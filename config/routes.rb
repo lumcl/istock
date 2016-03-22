@@ -33,6 +33,7 @@ Rails.application.routes.draw do
     get :link_pallet, on: :collection
     get :link_scan, on: :collection
     get :packing_box, on: :collection
+    get :packing, on: :collection
   end
 
   resources :stock_masters

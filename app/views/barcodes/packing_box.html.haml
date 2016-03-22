@@ -57,19 +57,16 @@
 
       - if @barcode.parent.blank? and @barcode.name.eql?('box') and @barcode.menge > 0
         %hr
-        %h5 請填入要填充的數量
-        = form_tag(unlink_box_barcodes_url, method: 'get', class: 'form-horizontal', remote: true, id:'form_id') do
+        %h5 請填入要填充的
+        = form_tag(packing_barcodes_url, method: 'get', class: 'form-horizontal', remote: true, id:'form_id') do
           = hidden_field_tag :uuid, @barcode.uuid
-          = hidden_field_tag :menge, @barcode.menge
-          %dl.dl-horizontal.mobile
-            - (1..5).each do |i|
-              .form-group
-                .col-sm-12
-                  %dt
-                    = t('attributes.box_cnt')
-                    = i
-                  %dd
-                    = text_field_tag 'qty[]', nil, placeholder: t('attributes.menge'), type:'number',class: 'form-control inputqty', value:'', id: "qty_#{i}"
+          = hidden_field_tag :parent_id, @barcode.parent_id
+          .form-group
+            .col-sm-12
+              %dt
+                = t('attributes.box_cnt')
+              %dd
+                = text_field_tag 'parent_id', nil, placeholder: t('attributes.barcode'), type:'string',class: 'form-control inputparent_id', value:'', id: "parent_id"
           .form-group
             .col-sm-12
               = label_tag 'printer_id', t('attributes.printer')
