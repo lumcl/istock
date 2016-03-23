@@ -38,7 +38,7 @@ class EnquiriesController < ApplicationController
                b.uuid,b.name,b.menge,a.werks ||'-'|| nvl(b.storage,b.lgort)storage,b.status,b.seq
           from stock_master a
             join barcode b on b.stock_master_id = a.uuid and b.status <> 'takeaway'
-            where (b.parent_id <> '0' or b.parent_id <> '' ) and b.storage = ? and a.werks like '%#{params[:werks].upcase}%'
+            where b.storage = ? and a.werks like '%#{params[:werks].upcase}%'
       "
       @barcodes = StockMaster.find_by_sql [sql, params[:storage].upcase]
 
