@@ -260,7 +260,7 @@ class BarcodesController < ApplicationController
           :factory => barcode.stock_master.werks
         }
         zpl_command = Barcode.finish_goods_label hash
-        socket.write zpl_command
+        #socket.write zpl_command
       }
 
       socket.close
