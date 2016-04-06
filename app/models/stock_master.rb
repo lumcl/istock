@@ -19,6 +19,32 @@ class StockMaster < ActiveRecord::Base
     list   = Sapdb.find_by_sql sql
     box    = {}
     pallet = {}
+    pallet[:qty] = 1
+    pallet[:uom] = 'ST'
+    pallet_found = false
+
+    list.select{|b| b.subpacknr.present? and (b.pobjid[(b.pobjid.size - 3)..(b.pobjid.size)] == 'PAL')}.each do |row|
+      pallet[:qty] = row.trgqty
+      pallet[:uom] = row.baseunit
+      pallet_found = true
+    end
+
+    if not pallet_found
+      list.select{|b| b.subpacknr.present? and (b.pobjid[(b.pobjid.size - 3)..(b.pobjid.size)] == 'PAQ')}.each do |row|
+        pallet[:qty] = row.trgqty
+        pallet[:uom] = row.baseunit
+        pallet_found = true
+      end
+    end
+
+    if not pallet_found
+      list.select{|b| b.subpacknr.present? and (b.pobjid[(b.pobjid.size - 2)..(b.pobjid.size)] == 'PA')}.each do |row|
+        pallet[:qty] = row.trgqty
+        pallet[:uom] = row.baseunit
+        pallet_found = true
+      end
+    end
+
     list.each do |row|
       if row.matnr == matnr
         box[:qty]   = row.trgqty
@@ -29,9 +55,9 @@ class StockMaster < ActiveRecord::Base
       elsif row.matnr[0..2] == 'BOX'
         box[:weight] = row.brgew
         box[:wuom]   = row.gewei
-      elsif row.subpacknr != ' '
-        pallet[:qty] = row.trgqty
-        pallet[:uom] = row.baseunit
+      # elsif row.subpacknr != ' '
+      #   pallet[:qty] = row.trgqty
+      #   pallet[:uom] = row.baseunit
       end
     end
 
