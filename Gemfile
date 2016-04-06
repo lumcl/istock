@@ -27,6 +27,8 @@ gem 'paperclip', '~> 4.3.0'
 gem 'tzinfo-data'
 #gem 'chart-js-rails' #for chart.js
 
+gem 'crypt'
+
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller', :platforms=>[:mri_20]

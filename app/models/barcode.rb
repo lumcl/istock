@@ -66,7 +66,7 @@ class Barcode < ActiveRecord::Base
     end
     lab3 = "
       ^FT803,768^A0B,75,74^FH\^FD#{hash[:qty]} #{hash[:meins]}^FS
-      ^FT674,768^A0B,75,74^FH\^FD#{hash[:product_no]}^FS
+      ^FT657,768^A0B,58,57^FH\^FD#{hash[:product_no]}^FS
       ^FT135,763^A0B,75,74^FH\^FD^FS
       ^PQ1,0,1,Y^XZ
     "
