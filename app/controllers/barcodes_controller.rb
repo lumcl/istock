@@ -200,15 +200,14 @@ class BarcodesController < ApplicationController
     message = '填箱成功!'
     uuid = ''
     old_barcode = Barcode.find params[:uuid]
-    parent_barcode = Barcode.find params[:parent_id]
+    other_barcode = Barcode.find params[:other_id]
     menge       = 0
     barcodes = []
 
-
-    if old_barcode.menge + parent_barcode.menge > old_barcode.stock_master.menge
+    if old_barcode.menge + other_barcode.menge > old_barcode.stock_master.menge
       menge = old_barcode.stock_master.menge
     else
-      menge = old_barcode.menge + parent_barcode.menge
+      menge = old_barcode.menge + other_barcode.menge
     end
 
       begin
@@ -217,11 +216,11 @@ class BarcodesController < ApplicationController
         old_barcode.save
 
         #填箱更改數量 0
-        parent_barcode.menge = 0
-        parent_barcode.status = 'packing_box'
-        parent_barcode.save
+        other_barcode.menge = 0
+        other_barcode.status = 'packing_box'
+        other_barcode.save
 
-        if old_barcode.menge + parent_barcode.menge > old_barcode.stock_master.menge
+        if old_barcode.menge + other_barcode.menge > old_barcode.stock_master.menge
           bar = Barcode.create({
                              storage: old_barcode.storage,
                              name: old_barcode.name,
@@ -230,7 +229,7 @@ class BarcodesController < ApplicationController
                              child: old_barcode.child,
                              lgort: old_barcode.lgort,
                              status: old_barcode.status,
-                             menge: old_barcode.menge + parent_barcode.menge - old_barcode.stock_master.menge
+                             menge: old_barcode.menge + other_barcode.menge - old_barcode.stock_master.menge
                          })
 
           barcodes.append bar.uuid
@@ -261,7 +260,7 @@ class BarcodesController < ApplicationController
           :factory => barcode.stock_master.werks
         }
         zpl_command = Barcode.finish_goods_label hash
-        socket.write zpl_command
+        #socket.write zpl_command
       }
 
       socket.close
