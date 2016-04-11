@@ -3,7 +3,69 @@ class StockMaster < ActiveRecord::Base
   has_many :barcodes, :class_name => 'Barcode', :dependent => :destroy
 
   def self.get_packaging(matnr)
+    box, pallet = get_plm_packaging(matnr)
+    if box.present?
+      return box, pallet
+    else
+      return get_sap_pop3(matnr)
+    end
+  end
+
+  def self.get_plm_packaging(matnr)
     sql    = "
+      select child_material_text,usage,(1/usage * 1000) qty,remarks,wom,grwt,ntwt,uom from it.pbomxtb
+      where pmatnr=? and (child_material_text like 'CARTON%' or child_material_text like 'PALLET%')
+    "
+    pallet = {}
+    box    = {}
+    rows   = Sapco.find_by_sql [sql, matnr]
+    rows.each do |row|
+      #寻找包装数量
+      buf = row.remarks.split('/')
+      qty_str = ''
+      if buf.size > 1
+        buf.second.strip.each_char do |char|
+          if char.numeric?
+            qty_str = "#{qty_str}#{char}"
+          else
+            break
+          end
+        end
+      end
+
+      if qty_str.present?
+        if row.child_material_text.include?('CARTON')
+          box[:qty]    = qty_str.to_i
+          box[:weight] = row.grwt
+          box[:wuom]   = row.wom
+        else
+          pallet[:qty] = qty_str.to_i
+          pallet[:uom] = row.wom
+        end
+      end #qty_str.present?
+
+    end #rows
+
+    if box.present?
+      sql = "select meins, brgew, ntgew, gewei from sapsr3.mara where mandt='168' and matnr=?"
+      rows = Sapdb.find_by_sql [sql, matnr]
+      rows.each do |row|
+        box[:uom]   = row.meins
+        box[:brgew] = row.brgew
+        box[:ntgew] = row.ntgew
+        box[:gewei] = row.gewei
+      end
+      if pallet.blank?
+        pallet[:qty] = 20
+        pallet[:uom] = 'ST'
+      end
+    end
+
+    return box, pallet
+  end
+
+  def self.get_sap_pop3(matnr)
+    sql          = "
       select e.packnr, e.pobjid,f.paitemtype,f.matnr,f.subpacknr,f.trgqty,f.baseunit,g.brgew,g.ntgew,g.gewei
       from sapsr3.packkp e
         join sapsr3.packpo f on f.mandt=e.mandt and f.packnr=e.packnr and f.inddel <> 'X'
@@ -16,21 +78,21 @@ class StockMaster < ActiveRecord::Base
         ) v
       where e.packnr = v.packnr or f.subpacknr = v.packnr and e.pobjid like '#{matnr}%'
     "
-    list   = Sapdb.find_by_sql sql
-    box    = {}
-    pallet = {}
-    pallet[:qty] = 1
+    pallet       = {}
+    box          = {}
+    list         = Sapdb.find_by_sql sql
+    pallet[:qty] = 20
     pallet[:uom] = 'ST'
     pallet_found = false
 
-    list.select{|b| b.subpacknr.present? and (b.pobjid[(b.pobjid.size - 3)..(b.pobjid.size)] == 'PAL')}.each do |row|
+    list.select { |b| b.subpacknr.present? and (b.pobjid[(b.pobjid.size - 3)..(b.pobjid.size)] == 'PAL') }.each do |row|
       pallet[:qty] = row.trgqty
       pallet[:uom] = row.baseunit
       pallet_found = true
     end
 
     if not pallet_found
-      list.select{|b| b.subpacknr.present? and (b.pobjid[(b.pobjid.size - 3)..(b.pobjid.size)] == 'PAQ')}.each do |row|
+      list.select { |b| b.subpacknr.present? and (b.pobjid[(b.pobjid.size - 3)..(b.pobjid.size)] == 'PAQ') }.each do |row|
         pallet[:qty] = row.trgqty
         pallet[:uom] = row.baseunit
         pallet_found = true
@@ -38,7 +100,7 @@ class StockMaster < ActiveRecord::Base
     end
 
     if not pallet_found
-      list.select{|b| b.subpacknr.present? and (b.pobjid[(b.pobjid.size - 2)..(b.pobjid.size)] == 'PA')}.each do |row|
+      list.select { |b| b.subpacknr.present? and (b.pobjid[(b.pobjid.size - 2)..(b.pobjid.size)] == 'PA') }.each do |row|
         pallet[:qty] = row.trgqty
         pallet[:uom] = row.baseunit
         pallet_found = true
@@ -55,9 +117,9 @@ class StockMaster < ActiveRecord::Base
       elsif row.matnr[0..2] == 'BOX'
         box[:weight] = row.brgew
         box[:wuom]   = row.gewei
-      # elsif row.subpacknr != ' '
-      #   pallet[:qty] = row.trgqty
-      #   pallet[:uom] = row.baseunit
+        # elsif row.subpacknr != ' '
+        #   pallet[:qty] = row.trgqty
+        #   pallet[:uom] = row.baseunit
       end
     end
 
@@ -172,8 +234,8 @@ class StockMaster < ActiveRecord::Base
       )
 
       #这是正常的
-      pallet = Barcode.new
-      no_of_box1 = 0
+      pallet       = Barcode.new
+      no_of_box1   = 0
       (1..params[:no_of_pallet1].to_i).each do |i|
         pallet = Barcode.create(
             :stock_master_id => stock_master.id,

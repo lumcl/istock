@@ -1,5 +1,8 @@
 class ActiveRecord::Base
   self.primary_key = :uuid
+  connection.raw_connection.recv_timeout = 150
+  connection.raw_connection.send_timeout = 10
+
   before_create :assign_uuid
 
   private
