@@ -33,6 +33,5 @@
       %li= link_to '打印儲位', print_storage_storages_path
       %li= link_to '儲位管理', storages_path
   %li= link_to 'Sign out', destroy_user_session_path, :method=>'delete'
-  %li= link_to 'Users', users_path if current_user.role == 'admin'
 -else
   %li= link_to 'Sign in', new_user_session_path
