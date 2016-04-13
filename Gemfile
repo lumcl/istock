@@ -31,12 +31,12 @@ gem 'crypt'
 
 group :development do
   gem 'better_errors'
-  gem 'binding_of_caller', :platforms=>[:mri_20]
-  gem 'html2haml'
-  gem 'rails_layout'
+#  gem 'binding_of_caller', :platforms=>[:mri_20]
+#  gem 'html2haml'
+#  gem 'rails_layout'
 end
 group :development, :test do
-  gem 'rubocop'
-  gem 'byebug'
-  gem 'web-console', '~> 2.0'
+#  gem 'rubocop'
+#  gem 'byebug'
+#  gem 'web-console', '~> 2.0'
 end
