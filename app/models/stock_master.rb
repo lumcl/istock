@@ -2,8 +2,8 @@ class StockMaster < ActiveRecord::Base
   self.primary_key = :uuid
   has_many :barcodes, :class_name => 'Barcode', :dependent => :destroy
 
-  def self.get_packaging(matnr)
-    box, pallet = get_plm_packaging(matnr)
+  def self.get_packaging(matnr, werks)
+    box, pallet = get_plm_packaging(matnr, werks)
     if box.present?
       return box, pallet
     else
@@ -11,14 +11,22 @@ class StockMaster < ActiveRecord::Base
     end
   end
 
-  def self.get_plm_packaging(matnr)
-    sql    = "
-      select child_material_text,usage,(1/usage * 1000) qty,remarks,wom,grwt,ntwt,uom from it.pbomxtb
-      where pmatnr=? and (child_material_text like 'CARTON%' or child_material_text like 'PALLET%')
+  def self.get_plm_packaging(matnr, werks)
+    # sql    = "
+    #   select child_material_text,usage,(1/usage * 1000) qty,remarks,wom,grwt,ntwt,uom from it.pbomxtb
+    #   where pmatnr=? and (child_material_text like 'CARTON%' or child_material_text like 'PALLET%')
+    # "
+    # rows   = Sapco.find_by_sql [sql, matnr]
+    sql = "
+      select a.cmaktx child_material_text, a.potx1 remarks, a.meins uom,
+             b.gewei wom, b.brgew grwt, b.ntgew ntwt
+      from it.sbomxtb a
+        join sapsr3.mara@sapp b on b.mandt='168' and b.matnr=a.cmatnr
+      where a.pmatnr=? and a.werks=? and (a.cmaktx like 'CARTON%' or a.cmaktx like 'PALLET%')
     "
+    rows   = Sapco.find_by_sql [sql, matnr, werks]
     pallet = {}
     box    = {}
-    rows   = Sapco.find_by_sql [sql, matnr]
     rows.each do |row|
       #寻找包装数量
       buf = row.remarks.split('/')
@@ -154,7 +162,7 @@ class StockMaster < ActiveRecord::Base
       record[:psmng] = row.psmng
       record[:wemng] = row.wemng
 
-      box, pallet   = get_packaging row.matnr
+      box, pallet   = get_packaging(row.matnr,row.werks)
 
       box[:qty]     = row.menge if box[:qty].nil?
       no_of_box     = (row.menge.to_f / box[:qty].to_f).ceil
