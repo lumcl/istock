@@ -204,7 +204,7 @@ class BarcodesController < ApplicationController
     menge       = 0
     barcodes = []
 
-    if old_barcode.menge + other_barcode.menge > old_barcode.stock_master.menge
+    if old_barcode.menge + other_barcode.menge >= old_barcode.stock_master.menge
       menge = old_barcode.stock_master.menge
     else
       menge = old_barcode.menge + other_barcode.menge
