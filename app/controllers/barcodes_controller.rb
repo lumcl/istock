@@ -260,7 +260,7 @@ class BarcodesController < ApplicationController
           :factory => barcode.stock_master.werks
         }
         zpl_command = Barcode.finish_goods_label hash
-        #socket.write zpl_command
+        socket.write zpl_command
       }
 
       socket.close
@@ -471,7 +471,7 @@ class BarcodesController < ApplicationController
         :name        => barcode.name.blank? ? '' : barcode.name[0].upcase,
         :meins       => barcode.stock_master.meins,
         :seq_parent  => barcode.parent.present? ? barcode.parent.seq : '',
-        :name_parent => barcode.parent.present? ? barcode.parent.name[0].upcase : '', 
+        :name_parent => barcode.parent.present? ? barcode.parent.name[0].upcase : '',
         :factory     => barcode.stock_master.werks
     }
     zpl_command = Barcode.finish_goods_label hash
