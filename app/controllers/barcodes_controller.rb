@@ -220,7 +220,7 @@ class BarcodesController < ApplicationController
         other_barcode.status = 'packing_box'
         other_barcode.save
 
-        if old_barcode.menge + other_barcode.menge > old_barcode.stock_master.menge
+        if old_barcode.menge + other_barcode.menge >= old_barcode.stock_master.menge
           bar = Barcode.create({
                              storage: old_barcode.storage,
                              name: old_barcode.name,
