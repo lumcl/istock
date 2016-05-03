@@ -68,7 +68,7 @@ class Barcode < ActiveRecord::Base
       ^FT803,768^A0B,75,74^FH\^FD#{hash[:qty]} #{hash[:meins]}^FS
       ^FT657,768^A0B,58,57^FH\^FD#{hash[:product_no]}^FS
       ^FT135,763^A0B,75,74^FH\^FD^FS
-      ^PQ1,0,1,Y^XB^XZ
+      ^PQ1,0,1,Y#{hash[:xb]}^XZ
     "
     lab = lab1 + lab2 + lab3
     finish_goods_label_end lab
