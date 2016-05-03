@@ -195,7 +195,10 @@ class StockMaster < ActiveRecord::Base
     printer = Printer.find params[:printer_id]
     socket  = TCPSocket.new(printer.ip, printer.port)
 
-    stock_master.barcodes.each do |barcode|
+    list = stock_master.barcodes
+    i = 0
+    list.each do |barcode|
+      i = i + 1
       hash        = {
           :id          => barcode.id,
           :date        => stock_master.budat,
@@ -209,7 +212,8 @@ class StockMaster < ActiveRecord::Base
           :meins       => stock_master.meins,
           :seq_parent  => (barcode.parent_id != 0 && barcode.name[0].upcase.eql?('B')) ? barcode.parent.seq : '',
           :name_parent => (barcode.parent_id != 0 && barcode.name[0].upcase.eql?('P')) ? 'P' : barcode.parent.name[0].upcase,
-          :factory     => stock_master.werks
+          :factory     => stock_master.werks,
+          :xb => list.size == i ? '' : '^XB'
       }
       zpl_command = Barcode.finish_goods_label hash
       socket.write zpl_command
