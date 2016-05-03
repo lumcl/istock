@@ -86,7 +86,7 @@ class Barcode < ActiveRecord::Base
       ^FDLA,#{hash[:name]}^FS
       ^FT368,721^A0B,130,74^FH\^FD#{hash[:name]}^FS
       ^FT135,763^A0B,75,74^FH\^FDLeader Electronics Inc^FS
-      ^PQ1,0,1,Y^XZ
+      ^PQ1,0,1,Y^XB^XZ
     "
     finish_goods_label_end lab1
   end
