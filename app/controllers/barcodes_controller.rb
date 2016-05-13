@@ -259,9 +259,11 @@ class BarcodesController < ApplicationController
           :name_parent => barcode.parent.present? ? barcode.parent.name[0].upcase : '',
           :factory => barcode.stock_master.werks
         }
-        zpl_command = Barcode.finish_goods_label hash
-        socket.write zpl_command
+        zpl_command = zpl_command + (Barcode.finish_goods_label hash)
+#        socket.write zpl_command
       }
+
+      socket.write zpl_command
 
       socket.close
 
