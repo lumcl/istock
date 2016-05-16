@@ -2,10 +2,10 @@
   .panel-heading
     批次查詢
   .panel-body{style:'padding-bottom: 0px;'}
-    = form_tag(mblnr_onhand_enquiries_path, method: 'get', class: 'form-horizontal', id:'form_id') do
+    = form_tag(charg_onhand_enquiries_path, method: 'get', class: 'form-horizontal', id:'form_id') do
       .form-group
         .col-xs-12
-          = text_field_tag :mblnr, nil,placeholder: t('attributes.mblnr'), class: 'form-control', value:params[:mblnr], id: 'mblnr'
+          = text_field_tag :charg, nil,placeholder: t('attributes.charg'), class: 'form-control', value:params[:charg], id: 'charg'
       .form-group
         .col-xs-12
           = select_options_tag :werks, Figaro.env.plant.split(","), class: 'form-control', value: params[:werks], prompt: t('attributes.werks')

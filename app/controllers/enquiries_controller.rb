@@ -52,16 +52,16 @@ class EnquiriesController < ApplicationController
     end
   end
 
-  def mblnr_onhand
-    if params[:mblnr]
+  def charg_onhand
+    if params[:charg]
       sql       = "
         select a.matnr,a.maktx,a.matkl,a.charg,a.werks,a.meins,a.aufnr,a.datecode,a.budat,
                b.uuid,b.name,b.menge,a.werks ||'-'|| nvl(b.storage,b.lgort)storage,b.status,b.seq
           from stock_master a
             join barcode b on b.stock_master_id = a.uuid and b.status <> 'takeaway'
-            where a.mblnr = ? and a.werks like '%#{params[:werks].upcase}%'
+            where a.charg = ? and a.werks like '%#{params[:werks].upcase}%'
       "
-      @barcodes = StockMaster.find_by_sql [sql, params[:mblnr].upcase]
+      @barcodes = StockMaster.find_by_sql [sql, params[:charg].upcase]
 
       menge      = 0
       pallet_cnt = 0
