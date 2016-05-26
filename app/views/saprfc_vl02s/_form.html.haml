@@ -1,0 +1,32 @@
+= simple_form_for(@saprfc_vl02) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :VBELN
+    = f.input :POSNR
+    = f.input :MATNR
+    = f.input :CHARG
+    = f.input :MENGE
+    = f.input :MEINS
+    = f.input :WERKS
+    = f.input :LGORT
+    = f.input :MSG_TYPE
+    = f.input :MSG_ID
+    = f.input :MSG_NUMBER
+    = f.input :MSG_TEXT
+    = f.input :RFC_DATE
+    = f.input :STATUS
+    = f.input :MJAHR
+    = f.input :MBLNR
+    = f.input :ZEILE
+    = f.input :CREATOR
+    = f.input :UPDATER
+    = f.input :CREATED_AT
+    = f.input :UPDATED_AT
+    = f.input :BARCODE_ID
+
+  .form-actions
+    .clearfix
+    = button_tag class: 'btn btn-danger', type: 'button', onclick: "$(this).button('loading');this.form.submit();", data:{loading_text: t('saving')} do
+      %span.glyphicon.glyphicon-floppy-save
+      = t('save')
