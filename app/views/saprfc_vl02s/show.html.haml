@@ -1,0 +1,12 @@
+%h3= t('attributes.saprfc_vl02')
+%h5
+  = link_to t('edit'), edit_saprfc_vl02_path(@saprfc_vl02)
+  \|
+  = link_to t('back'), saprfc_vl02s_path
+
+= render partial: 'layouts/show', :locals => {object: @saprfc_vl02}
+
+%h5
+  = link_to t('edit'), edit_saprfc_vl02_path(@saprfc_vl02)
+  \|
+  = link_to t('back'), saprfc_vl02s_path

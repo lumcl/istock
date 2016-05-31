@@ -23,6 +23,12 @@
       %li= link_to '分箱', split_box_barcodes_path
       %li= link_to '查詢及关联棧板', link_scan_barcodes_path
       %li= link_to '填箱', packing_box_barcodes_path
+  %li.dropdown
+    %a.dropdown-toggle{data: {toggle: "dropdown"}, href: "#"}
+      = 'DN管理'
+      %b.caret
+    %ul.dropdown-menu
+      %li= link_to 'DN查詢', scan_dn_saprfc_vl02s_path
 
   %li= link_to '打印機', printers_path if current_user.role == 'admin'
   %li.dropdown

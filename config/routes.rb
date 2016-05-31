@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
 
+  resources :saprfc_vl02s do
+    get :scan_dn, on: :collection
+    get :dn_scan, on: :collection
+  end
   resources :saprfc_mb1bs
   resources :storages do
     get :print, on: :collection

@@ -1,0 +1,1 @@
+json.extract! @saprfc_vl02, :id, :VBELN, :POSNR, :MATNR, :CHARG, :MENGE, :MEINS, :WERKS, :LGORT, :MSG_TYPE, :MSG_ID, :MSG_NUMBER, :MSG_TEXT, :RFC_DATE, :STATUS, :MJAHR, :MBLNR, :ZEILE, :CREATOR, :UPDATER, :CREATED_AT, :UPDATED_AT, :BARCODE_ID, :created_at, :updated_at

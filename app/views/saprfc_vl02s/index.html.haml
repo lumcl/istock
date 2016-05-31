@@ -1,0 +1,72 @@
+%h3= t('attributes.saprfc_vl02')
+
+%h5
+  = link_to t('new_saprfc_vl02'), new_saprfc_vl02_path
+
+= form_tag(saprfc_vl02s_url, method: 'get', class: 'form-inline') do
+  = text_field_tag :name, nil, placeholder: t('attributes.name'), class: 'form-control input-sm', value: params[:name]
+  = button_tag class: 'btn btn-success btn-form-submit', type: 'button' do
+    %span.glyphicon.glyphicon-search
+
+.table-responsive
+  %table.table.table-hover.table-condensed.table-bordered
+    %thead
+      %tr
+        %th= t('action')
+        %th= t('attributes.VBELN')
+        %th= t('attributes.POSNR')
+        %th= t('attributes.MATNR')
+        %th= t('attributes.CHARG')
+        %th= t('attributes.MENGE')
+        %th= t('attributes.MEINS')
+        %th= t('attributes.WERKS')
+        %th= t('attributes.LGORT')
+        %th= t('attributes.MSG_TYPE')
+        %th= t('attributes.MSG_ID')
+        %th= t('attributes.MSG_NUMBER')
+        %th= t('attributes.MSG_TEXT')
+        %th= t('attributes.RFC_DATE')
+        %th= t('attributes.STATUS')
+        %th= t('attributes.MJAHR')
+        %th= t('attributes.MBLNR')
+        %th= t('attributes.ZEILE')
+        %th= t('attributes.CREATOR')
+        %th= t('attributes.UPDATER')
+        %th= t('attributes.CREATED_AT')
+        %th= t('attributes.UPDATED_AT')
+        %th= t('attributes.BARCODE_ID')
+    %tbody
+      - @saprfc_vl02s.each do |saprfc_vl02|
+        %tr
+          %td
+            = link_to t('edit'), edit_saprfc_vl02_path(saprfc_vl02)
+            |
+            = link_to t('delete'), saprfc_vl02, :method => :delete, :data => { :confirm => t('confirm_delete')}
+
+          %td= saprfc_vl02.VBELN
+          %td= saprfc_vl02.POSNR
+          %td= saprfc_vl02.MATNR
+          %td= saprfc_vl02.CHARG
+          %td= saprfc_vl02.MENGE
+          %td= saprfc_vl02.MEINS
+          %td= saprfc_vl02.WERKS
+          %td= saprfc_vl02.LGORT
+          %td= saprfc_vl02.MSG_TYPE
+          %td= saprfc_vl02.MSG_ID
+          %td= saprfc_vl02.MSG_NUMBER
+          %td= saprfc_vl02.MSG_TEXT
+          %td= saprfc_vl02.RFC_DATE
+          %td= saprfc_vl02.STATUS
+          %td= saprfc_vl02.MJAHR
+          %td= saprfc_vl02.MBLNR
+          %td= saprfc_vl02.ZEILE
+          %td= saprfc_vl02.CREATOR
+          %td= saprfc_vl02.UPDATER
+          %td= saprfc_vl02.CREATED_AT
+          %td= saprfc_vl02.UPDATED_AT
+          %td= saprfc_vl02.BARCODE_ID
+
+%h5
+  = link_to t('new_saprfc_vl02'), new_saprfc_vl02_path
+
+= paginate @saprfc_vl02s unless @saprfc_vl02s.empty?
