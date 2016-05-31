@@ -47,7 +47,7 @@ class StockMaster < ActiveRecord::Base
           box[:weight] = row.grwt
           box[:wuom]   = row.wom
         else
-          pallet[:qty] = qty_str.to_i
+          pallet[:qty] = qty_str.to_i if qty_str.to_i < (pallet[:qty] || 0)
           pallet[:uom] = row.wom
         end
       end #qty_str.present?
