@@ -268,7 +268,7 @@ class StockMaster < ActiveRecord::Base
               :lgort           => record.lgort,
               :status          => 'created',
               :menge           => params[:box_qty].to_i
-          )
+          ) if stock_master.menge >= params[:box_qty].to_i
           break if no_of_box1 == params[:no_of_box1].to_i
         end
       end
