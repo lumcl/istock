@@ -344,6 +344,8 @@ class BarcodesController < ApplicationController
                         'EXFG'
                       when '381A'
                         'EBFG'
+                      else
+                        'FG01'
                     end
           SaprfcMb1b.create({
                                 parent_id: barcode.stock_master_id,
