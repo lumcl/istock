@@ -3,12 +3,12 @@ class StockMaster < ActiveRecord::Base
   has_many :barcodes, :class_name => 'Barcode', :dependent => :destroy
 
   def self.get_packaging(matnr, werks)
-    box, pallet = get_plm_packaging(matnr, werks)
-    if box.present?
-      return box, pallet
-    else
-      return get_sap_pop3(matnr)
-    end
+    return get_plm_packaging_v2(matnr, werks)
+    # if box.present?
+    #   return box, pallet
+    # else
+    #   return get_sap_pop3(matnr)
+    # end
   end
 
   def self.get_plm_packaging(matnr, werks)
@@ -62,13 +62,59 @@ class StockMaster < ActiveRecord::Base
         box[:gewei] = row.gewei
       end
       if pallet.blank?
-        pallet[:qty] = 20
+        pallet[:qty] = 20 * box[:qty]
         pallet[:uom] = 'ST'
       end
     end
-
     return box, pallet
   end
+
+  def self.get_plm_packaging_v2(matnr, werks)
+    # sql    = "
+    #   select child_material_text,usage,(1/usage * 1000) qty,remarks,wom,grwt,ntwt,uom from it.pbomxtb
+    #   where pmatnr=? and (child_material_text like 'CARTON%' or child_material_text like 'PALLET%')
+    # "
+    # rows   = Sapco.find_by_sql [sql, matnr]
+    sql = "
+      select a.cmatnr,a.child_material_text, a.remarks
+        from it.pbomxtb a
+        where a.pmatnr=? and a.plant=? and a.cmatnr='2002013960000'
+    "
+    rows   = Sapco.find_by_sql [sql, matnr, werks]
+    pallet = {}
+    box    = {}
+    min_qty = 0
+    max_qty = 0
+    rows.each do |row|
+      #寻找包装数量
+      buf = row.remarks.split('/')
+      qty_str = ''
+      if buf.size > 1
+        buf.second.strip.each_char do |char|
+          if char.numeric?
+            qty_str = "#{qty_str}#{char}"
+          else
+            break
+          end
+        end
+      end
+      if qty_str.present?
+        plm_qty = qty_str.to_i
+        min_qty = plm_qty if (min_qty == 0 or min_qty >= plm_qty)
+        max_qty = plm_qty if (max_qty == 0 or max_qty <= plm_qty)
+      end
+    end #rows
+    if min_qty != 0
+      box[:qty] = min_qty
+      box[:weight] = 0
+      box[:wuom]   = 'EA'
+      pallet[:qty] = max_qty
+      pallet[:uom] = 'ST'
+    end
+   return box, pallet
+  end
+
+
 
   def self.get_sap_pop3(matnr)
     sql          = "
@@ -162,20 +208,33 @@ class StockMaster < ActiveRecord::Base
 
       box, pallet   = get_packaging(row.matnr,row.werks)
 
+      # puts "$$$$$$$$$$$$"
+      # puts pallet[:qty]
+      # puts "$$$$$$$$$$$$"
+
       box[:qty]     = row.menge if box[:qty].nil?
       no_of_box     = (row.menge.to_f / box[:qty].to_f).ceil
       no_of_box1    = (row.menge.to_f / box[:qty].to_f).to_i
       no_of_box2    = no_of_box - no_of_box1
 
-      pallet[:qty]  = no_of_box if pallet[:qty].nil?
-      no_of_pallet  = (no_of_box.to_f / pallet[:qty].to_f).ceil
-      no_of_pallet1 = (no_of_box.to_f / pallet[:qty].to_f).to_i
+
+      pallet[:qty]  = no_of_box if pallet[:qty].blank?
+      no_of_pallet  = (row.menge.to_f / pallet[:qty].to_f).ceil #向上取整數
+      no_of_pallet1 = (row.menge.to_f / pallet[:qty].to_f).to_i #取整數不作4捨五入
       no_of_pallet2 = no_of_pallet - no_of_pallet1
+
+      # puts "!!!!!!!!!!!!!!!!!!!"
+      # puts pallet[:qty]
+      # puts row.menge
+      # puts no_of_pallet
+      # puts no_of_pallet1
+      # puts no_of_pallet2
+      # puts "!!!!!!!!!!!!!!!!!!!"
 
       record[:box_qty]       = box[:qty]
       record[:box_qty2]      = row.menge - (no_of_box1 * box[:qty])
       record[:pallet_qty]    = pallet[:qty]
-      record[:pallet_qty2]   = no_of_box - (no_of_pallet1 * pallet[:qty])
+      record[:pallet_qty2]   = row.menge - (no_of_pallet1 * pallet[:qty])
       record[:no_of_box1]    = no_of_box1
       record[:no_of_box2]    = no_of_box2
       record[:no_of_pallet1] = no_of_pallet1
