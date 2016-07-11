@@ -40,18 +40,16 @@ class StockMaster < ActiveRecord::Base
           end
         end
       end
-
       if qty_str.present?
         if row.child_material_text.include?('CARTON')
-          box[:qty]    = qty_str.to_i if qty_str.to_i > (box[:qty] || 0)
+          box[:qty]    = qty_str.to_i if qty_str.to_i >= (box[:qty] || 0)
           box[:weight] = row.grwt
           box[:wuom]   = row.wom
         else
-          pallet[:qty] = qty_str.to_i if qty_str.to_i < (pallet[:qty] || 0)
+          pallet[:qty] = qty_str.to_i if qty_str.to_i <= (pallet[:qty] || qty_str.to_i)
           pallet[:uom] = row.wom
         end
       end #qty_str.present?
-
     end #rows
 
     if box.present?
