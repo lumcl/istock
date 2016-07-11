@@ -315,7 +315,7 @@ class StockMaster < ActiveRecord::Base
             :status          => 'created',
             :menge           => 0
         )
-        (1..params[:pallet_qty].to_i).each do |i|
+        (1..(params[:pallet_qty].to_i / params[:box_qty].to_i)).each do |i|
           no_of_box1 += 1
           Barcode.create(
               :stock_master_id => stock_master.id,
@@ -374,9 +374,9 @@ class StockMaster < ActiveRecord::Base
             :menge           => 0
         )
       end
-      (1..params[:pallet_qty2].to_i).each do |i|
+      (1..(params[:pallet_qty2].to_i / params[:box_qty].to_i).ceil).each do |i|
         #检查最后一箱是否是尾箱还是整箱
-        if (i == params[:pallet_qty2].to_i) and (params[:box_qty2].to_i != 0)
+        if (i == (params[:pallet_qty2].to_i / params[:box_qty].to_i).ceil) and (params[:box_qty2].to_i != 0)
           Barcode.create(
               :stock_master_id => stock_master.id,
               :name            => 'box',
