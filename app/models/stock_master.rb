@@ -254,6 +254,10 @@ class StockMaster < ActiveRecord::Base
     list = stock_master.barcodes
     i    = 0
     list.each do |barcode|
+      parent_seq = ''
+      parent_seq = barcode.parent.seq if barcode.parent.present?
+      parent_name = ''
+      parent_name = barcode.parent.name[0].upcase if barcode.parent.present?
       i           = i + 1
       hash        = {
           :id          => barcode.id,
@@ -266,8 +270,8 @@ class StockMaster < ActiveRecord::Base
           :seq         => barcode.seq,
           :name        => barcode.name.blank? ? '' : barcode.name[0].upcase,
           :meins       => stock_master.meins,
-          :seq_parent  => (barcode.parent_id != 0 && barcode.name[0].upcase.eql?('B')) ? barcode.parent.seq : '',
-          :name_parent => (barcode.parent_id != 0 && barcode.name[0].upcase.eql?('P')) ? 'P' : barcode.parent.name[0].upcase,
+          :seq_parent  => (barcode.parent_id != 0 && barcode.name[0].upcase.eql?('B')) ? parent_seq : '',
+          :name_parent => (barcode.parent_id != 0 && barcode.name[0].upcase.eql?('P')) ? 'P' : parent_name,
           :factory     => stock_master.werks,
           :xb          => list.size == i ? '' : '^XB'
       }
@@ -283,7 +287,7 @@ class StockMaster < ActiveRecord::Base
   def self.create_label_v2(params, record)
 
     StockMaster.transaction do
-      stock_master = StockMaster.create(
+      stock_master    = StockMaster.create(
           :matnr      => record.matnr,
           :maktx      => record.maktx,
           :matkl      => record.matkl,
@@ -300,27 +304,29 @@ class StockMaster < ActiveRecord::Base
           :datecode   => record.atwrt,
           :budat      => record.budat,
       )
-      wt_pallet_qty = record.menge #4020
-      wt_carton_qty = record.menge #4020
-      carton_qty     = params[:box_qty].to_i #60
-      full_pallet_qty  = params[:pallet_qty].to_i #1200
+      wt_pallet_qty   = record.menge #4020
+      wt_carton_qty   = record.menge #4020
+      carton_qty      = params[:box_qty].to_i #60
+      full_pallet_qty = params[:pallet_qty].to_i #1200
 
       while wt_pallet_qty > 0
-        pallet     = Barcode.create(
-            :stock_master_id => stock_master.id,
-            :name            => 'pallet',
-            :parent_id       => 0,
-            :child           => true,
-            :lgort           => record.lgort,
-            :status          => 'created',
-            :menge           => 0)
+        if carton_qty != full_pallet_qty
+          pallet = Barcode.create(
+              :stock_master_id => stock_master.id,
+              :name            => 'pallet',
+              :parent_id       => 0,
+              :child           => true,
+              :lgort           => record.lgort,
+              :status          => 'created',
+              :menge           => 0)
+        end
         ws_carton_qty = 0
         while wt_carton_qty > 0
           if wt_carton_qty >= carton_qty #如果carton余量 >=  整箱数,箱子数量为整箱的数量
             Barcode.create(
                 :stock_master_id => stock_master.id,
                 :name            => 'box',
-                :parent_id       => pallet.id,
+                :parent_id       => pallet.present? ? pallet.id : 0,
                 :child           => true,
                 :lgort           => record.lgort,
                 :status          => 'created',
@@ -334,7 +340,7 @@ class StockMaster < ActiveRecord::Base
             Barcode.create(
                 :stock_master_id => stock_master.id,
                 :name            => 'box',
-                :parent_id       => pallet.id,
+                :parent_id       => pallet.present? ? pallet.id : 0,
                 :child           => true,
                 :lgort           => record.lgort,
                 :status          => 'created',
