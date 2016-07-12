@@ -17,7 +17,7 @@ class StockMaster < ActiveRecord::Base
     #   where pmatnr=? and (child_material_text like 'CARTON%' or child_material_text like 'PALLET%')
     # "
     # rows   = Sapco.find_by_sql [sql, matnr]
-    sql = "
+    sql    = "
       select a.cmaktx child_material_text, a.potx1 remarks, a.meins uom,
              b.gewei wom, b.brgew grwt, b.ntgew ntwt
       from it.sbomxtb a
@@ -29,7 +29,7 @@ class StockMaster < ActiveRecord::Base
     box    = {}
     rows.each do |row|
       #寻找包装数量
-      buf = row.remarks.split('/')
+      buf     = row.remarks.split('/')
       qty_str = ''
       if buf.size > 1
         buf.second.strip.each_char do |char|
@@ -53,7 +53,7 @@ class StockMaster < ActiveRecord::Base
     end #rows
 
     if box.present?
-      sql = "select meins, brgew, ntgew, gewei from sapsr3.mara where mandt='168' and matnr=?"
+      sql  = "select meins, brgew, ntgew, gewei from sapsr3.mara where mandt='168' and matnr=?"
       rows = Sapdb.find_by_sql [sql, matnr]
       rows.each do |row|
         box[:uom]   = row.meins
@@ -75,19 +75,19 @@ class StockMaster < ActiveRecord::Base
     #   where pmatnr=? and (child_material_text like 'CARTON%' or child_material_text like 'PALLET%')
     # "
     # rows   = Sapco.find_by_sql [sql, matnr]
-    sql = "
+    sql     = "
       select a.cmatnr,a.child_material_text, a.remarks
         from it.pbomxtb a
         where a.pmatnr=? and a.plant=? and a.cmatnr='2002013960000'
     "
-    rows   = Sapco.find_by_sql [sql, matnr, werks]
-    pallet = {}
-    box    = {}
+    rows    = Sapco.find_by_sql [sql, matnr, werks]
+    pallet  = {}
+    box     = {}
     min_qty = 0
     max_qty = 0
     rows.each do |row|
       #寻找包装数量
-      buf = row.remarks.split('/')
+      buf     = row.remarks.split('/')
       qty_str = ''
       if buf.size > 1
         buf.second.strip.each_char do |char|
@@ -105,15 +105,14 @@ class StockMaster < ActiveRecord::Base
       end
     end #rows
     if min_qty != 0
-      box[:qty] = min_qty
+      box[:qty]    = min_qty
       box[:weight] = 0
       box[:wuom]   = 'EA'
       pallet[:qty] = max_qty
       pallet[:uom] = 'ST'
     end
-   return box, pallet
+    return box, pallet
   end
-
 
 
   def self.get_sap_pop3(matnr)
@@ -206,22 +205,22 @@ class StockMaster < ActiveRecord::Base
       record[:psmng] = row.psmng
       record[:wemng] = row.wemng
 
-      box, pallet   = get_packaging(row.matnr,row.werks)
+      box, pallet            = get_packaging(row.matnr, row.werks)
 
       # puts "$$$$$$$$$$$$"
       # puts pallet[:qty]
       # puts "$$$$$$$$$$$$"
 
-      box[:qty]     = row.menge if box[:qty].nil?
-      no_of_box     = (row.menge.to_f / box[:qty].to_f).ceil
-      no_of_box1    = (row.menge.to_f / box[:qty].to_f).to_i
-      no_of_box2    = no_of_box - no_of_box1
+      box[:qty]              = row.menge if box[:qty].nil?
+      no_of_box              = (row.menge.to_f / box[:qty].to_f).ceil
+      no_of_box1             = (row.menge.to_f / box[:qty].to_f).to_i
+      no_of_box2             = no_of_box - no_of_box1
 
 
-      pallet[:qty]  = no_of_box if pallet[:qty].blank?
-      no_of_pallet  = (row.menge.to_f / pallet[:qty].to_f).ceil #向上取整數
-      no_of_pallet1 = (row.menge.to_f / pallet[:qty].to_f).to_i #取整數不作4捨五入
-      no_of_pallet2 = no_of_pallet - no_of_pallet1
+      pallet[:qty]           = no_of_box if pallet[:qty].blank?
+      no_of_pallet           = (row.menge.to_f / pallet[:qty].to_f).ceil #向上取整數
+      no_of_pallet1          = (row.menge.to_f / pallet[:qty].to_f).to_i #取整數不作4捨五入
+      no_of_pallet2          = no_of_pallet - no_of_pallet1
 
       # puts "!!!!!!!!!!!!!!!!!!!"
       # puts pallet[:qty]
@@ -247,15 +246,15 @@ class StockMaster < ActiveRecord::Base
 
   def self.print_box_label(params)
     record       = (Sapdb.find_by_sql [SQL_MKPF, params[:id]]).first
-    stock_master = StockMaster.where(:mjahr => record.mjahr).where(:mblnr => record.mblnr).first || create_label(params, record)
+    stock_master = StockMaster.where(:mjahr => record.mjahr).where(:mblnr => record.mblnr).first || create_label_v2(params, record)
 
     printer = Printer.find params[:printer_id]
     socket  = TCPSocket.new(printer.ip, printer.port)
 
     list = stock_master.barcodes
-    i = 0
+    i    = 0
     list.each do |barcode|
-      i = i + 1
+      i           = i + 1
       hash        = {
           :id          => barcode.id,
           :date        => stock_master.budat,
@@ -270,7 +269,7 @@ class StockMaster < ActiveRecord::Base
           :seq_parent  => (barcode.parent_id != 0 && barcode.name[0].upcase.eql?('B')) ? barcode.parent.seq : '',
           :name_parent => (barcode.parent_id != 0 && barcode.name[0].upcase.eql?('P')) ? 'P' : barcode.parent.name[0].upcase,
           :factory     => stock_master.werks,
-          :xb => list.size == i ? '' : '^XB'
+          :xb          => list.size == i ? '' : '^XB'
       }
       zpl_command = Barcode.finish_goods_label hash
       socket.write zpl_command
@@ -280,6 +279,76 @@ class StockMaster < ActiveRecord::Base
   end
 
   private
+
+  def self.create_label_v2(params, record)
+
+    StockMaster.transaction do
+      stock_master = StockMaster.create(
+          :matnr      => record.matnr,
+          :maktx      => record.maktx,
+          :matkl      => record.matkl,
+          :charg      => record.charg,
+          :menge      => record.menge,
+          :box_cnt    => params[:no_of_box1].to_i + params[:no_of_box2].to_i,
+          :pallet_cnt => params[:no_of_pallet1].to_i + params[:no_of_pallet2].to_i,
+          :werks      => record.werks,
+          :meins      => record.meins,
+          :mjahr      => record.mjahr,
+          :mblnr      => record.mblnr,
+          :zeile      => record.zeile,
+          :aufnr      => record.aufnr,
+          :datecode   => record.atwrt,
+          :budat      => record.budat,
+      )
+      wt_pallet_qty = record.menge #4020
+      wt_carton_qty = record.menge #4020
+      carton_qty     = params[:box_qty].to_i #60
+      full_pallet_qty  = params[:pallet_qty].to_i #1200
+
+      while wt_pallet_qty > 0
+        pallet     = Barcode.create(
+            :stock_master_id => stock_master.id,
+            :name            => 'pallet',
+            :parent_id       => 0,
+            :child           => true,
+            :lgort           => record.lgort,
+            :status          => 'created',
+            :menge           => 0)
+        ws_carton_qty = 0
+        while wt_carton_qty > 0
+          if wt_carton_qty >= carton_qty #如果carton余量 >=  整箱数,箱子数量为整箱的数量
+            Barcode.create(
+                :stock_master_id => stock_master.id,
+                :name            => 'box',
+                :parent_id       => pallet.id,
+                :child           => true,
+                :lgort           => record.lgort,
+                :status          => 'created',
+                :menge           => carton_qty
+            )
+            wt_carton_qty = wt_carton_qty - carton_qty
+            wt_pallet_qty = wt_pallet_qty - carton_qty
+            ws_carton_qty = ws_carton_qty + carton_qty
+            break if ws_carton_qty >= full_pallet_qty
+          else
+            Barcode.create(
+                :stock_master_id => stock_master.id,
+                :name            => 'box',
+                :parent_id       => pallet.id,
+                :child           => true,
+                :lgort           => record.lgort,
+                :status          => 'created',
+                :menge           => wt_carton_qty
+            )
+            wt_pallet_qty = wt_pallet_qty - wt_carton_qty
+            wt_carton_qty = wt_carton_qty - wt_carton_qty
+            break
+          end
+        end
+      end
+      return stock_master
+    end
+  end
 
   def self.create_label(params, record)
 
