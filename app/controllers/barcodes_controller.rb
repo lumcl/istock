@@ -395,13 +395,13 @@ class BarcodesController < ApplicationController
                    .where(uuid: params[:uuid].split(','))
 
     response     = {
-        barcode_uuid: 'success'
+        barcode_out_uuid: 'success'
     }
-    barcode_uuid = ''
+    barcode_out_uuid = ''
     StockTran.transaction do
       begin
         barcodes.each { |barcode|
-          barcode_uuid = barcode.uuid
+          barcode_out_uuid = barcode.uuid
           StockTran.create({
                                master_id:   barcode.stock_master_id,
                                barcode_id:  barcode.uuid,
@@ -434,7 +434,7 @@ class BarcodesController < ApplicationController
         }
       rescue Exception => e
         response = {
-            barcode_uuid:  barcode_uuid,
+            barcode_out_uuid:  barcode_out_uuid,
             error_message: e.message
         }
       end

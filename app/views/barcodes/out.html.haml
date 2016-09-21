@@ -149,12 +149,12 @@
         }
       });
       ajax.done(function(response){
-        if (response.barcode_uuid == 'success'){
+        if (response.barcode_out_uuid == 'success'){
           alert("倉庫掃描發貨及下架成功");
           init_page();
         }
         else{
-          alert("注意系統錯誤, 請再一次上傳\n\nbarcode_uuid:"+response.barcode_uuid + "\n" +response.error_message);
+          alert("注意系統錯誤, 請再一次上傳\n\nbarcode_out_uuid:"+response.barcode_uuid + "\n" +response.error_message);
           $('#takeaway').attr("disabled", false);
           $('#takeaway').attr("value", '確認下貨架');
         }
