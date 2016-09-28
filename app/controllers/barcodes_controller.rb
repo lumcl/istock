@@ -440,7 +440,6 @@ class BarcodesController < ApplicationController
       end
     end
     render json: response
-    e
   end
 
   def repeat_printer
