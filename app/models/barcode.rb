@@ -49,8 +49,13 @@ class Barcode < ActiveRecord::Base
       ^FT187,763^A0B,33,33^FH\^FDMO^FS
       ^FT725,768^A0B,33,33^FH\^FDQuantity^FS
       ^FT252,763^A0B,75,74^FH\^FD#{hash[:mo]}^FS
-      ^FT588,768^A0B,33,33^FH\^FDLEI Product No^FS
     "
+    lab1_1 = ""
+    if hash[:product_no].to_s.eql?'MH30-V1120-K00S-C' or hash[:product_no].to_s.eql?'MH30-V1120-K02S-C' or hash[:product_no].to_s.eql?'MH30-21120-K00S-C' or hash[:product_no].to_s.eql?'MH30-21120-300S-C'
+      lab1_1 = "^FT588,768^A0B,33,33^FH\^FD^FS"
+    else
+      lab1_1 = "^FT588,768^A0B,33,33^FH\^FDLEI Product No^FS"
+    end
     lab2 = "
       ^FT914,768^A0B,28,50^FH\^FD#{hash[:name]}^FS
       ^FT930,532^A0B,55,67^FH\^FD**#{hash[:seq]}**^FS
@@ -66,11 +71,18 @@ class Barcode < ActiveRecord::Base
     end
     lab3 = "
       ^FT803,768^A0B,75,74^FH\^FD#{hash[:qty]} #{hash[:meins]}^FS
-      ^FT657,768^A0B,58,57^FH\^FD#{hash[:product_no]}^FS
+    "
+    if hash[:product_no].to_s.eql?'MH30-V1120-K00S-C' or hash[:product_no].to_s.eql?'MH30-V1120-K02S-C' or hash[:product_no].to_s.eql?'MH30-21120-K00S-C' or hash[:product_no].to_s.eql?'MH30-21120-300S-C'
+      lab3_2 = "^FT657,768^A0B,58,57^FH\^FD^FS"
+    else
+      lab3_2 = "^FT657,768^A0B,58,57^FH\^FD#{hash[:product_no]}^FS"
+    end
+
+    lab3_3 = "
       ^FT135,763^A0B,75,74^FH\^FD^FS
       ^PQ1,0,1,Y#{hash[:xb]}^XZ
     "
-    lab = lab1 + lab2 + lab3
+    lab = lab1 +lab1_1 + lab2 + lab3 + lab3_2 + lab3_3
     finish_goods_label_end lab
   end
 
