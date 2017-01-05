@@ -275,8 +275,29 @@ class StockMaster < ActiveRecord::Base
           :factory     => stock_master.werks,
           :xb          => list.size == i ? '' : '^XB'
       }
-      zpl_command = Barcode.finish_goods_label hash
-      socket.write zpl_command
+      #zpl_command = Barcode.finish_goods_label hash
+      #socket.write zpl_command
+    end
+
+    sup_code = ''
+    if stock_master.matnr[stock_master.matnr.length-3,stock_master.matnr.length] == 'LEI' || stock_master.matnr[stock_master.matnr.length-3,stock_master.matnr.length] == 'LB'
+      list.each do |brcode|
+        if stock_master.werks == '381A' or stock_master.werks == '382A'
+          sup_code = 'L300'
+        elsif stock_master.werks == '481A' or stock_master.werks == '482A'
+          sup_code = 'L400'
+        elsif stock_master.werks == '281A' or stock_master.werks == '282A'
+          sup_code = 'L210'
+        elsif stock_master.werks == '111A'
+          sup_code = 'L111'
+        end
+        begin
+          MesTErpPoItem.create(po_number: stock_master.mjahr, item_code: stock_master.matnr, item_line: '00010', item_num: brcode.menge, item_lot: stock_master.charg, item_sn: brcode.id, item_sn_qty: brcode.menge, receive_type: brcode.menge, supplier_code: sup_code, supplier_lot: stock_master.charg, supplier_date: stock_master.budat, plant: stock_master.werks, supplier_dn: stock_master.aufnr, has_label: 1)
+        rescue
+
+        end
+
+      end
     end
     socket.close
 
