@@ -11,7 +11,7 @@ tmp_dir = "#{app_dir}/tmp"
 rails_env = ENV['RAILS_ENV'] || "production"
 port        ENV['PORT']     || 3018
 environment rails_env
-daemonize true
+#daemonize true
 
 # Set up socket location
 #bind "unix://#{tmp_dir}/sockets/puma.sock"

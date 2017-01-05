@@ -279,6 +279,8 @@ class StockMaster < ActiveRecord::Base
       socket.write zpl_command
     end
 
+    socket.close
+
     sup_code = ''
     if stock_master.matnr[stock_master.matnr.length-3,stock_master.matnr.length] == 'LEI' || stock_master.matnr[stock_master.matnr.length-3,stock_master.matnr.length] == 'LB'
       list.each do |brcode|
@@ -299,7 +301,6 @@ class StockMaster < ActiveRecord::Base
 
       end
     end
-    socket.close
 
   end
 
