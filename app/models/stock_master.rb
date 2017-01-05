@@ -275,8 +275,8 @@ class StockMaster < ActiveRecord::Base
           :factory     => stock_master.werks,
           :xb          => list.size == i ? '' : '^XB'
       }
-      #zpl_command = Barcode.finish_goods_label hash
-      #socket.write zpl_command
+      zpl_command = Barcode.finish_goods_label hash
+      socket.write zpl_command
     end
 
     sup_code = ''
