@@ -292,7 +292,7 @@ class StockMaster < ActiveRecord::Base
           sup_code = 'L111'
         end
         begin
-          MesTErpPoItem.create(po_number: stock_master.mjahr, item_code: stock_master.matnr, item_line: '00010', item_num: brcode.menge, item_lot: stock_master.charg, item_sn: brcode.id, item_sn_qty: brcode.menge, receive_type: brcode.menge, supplier_code: sup_code, supplier_lot: stock_master.charg, supplier_date: stock_master.budat, plant: stock_master.werks, supplier_dn: stock_master.aufnr, has_label: 1)
+          MesTErpPoItem.create(po_number: "#{stock_master.mjahr}.#{stock_master.mblnr}", item_code: stock_master.matnr, item_line: '00010', item_num: brcode.menge, item_lot: stock_master.charg, item_sn: brcode.id, item_sn_qty: brcode.menge, receive_type: brcode.menge, supplier_code: sup_code, supplier_lot: stock_master.charg, supplier_date: stock_master.budat, plant: stock_master.werks, supplier_dn: stock_master.aufnr, has_label: 1)
         rescue
 
         end
