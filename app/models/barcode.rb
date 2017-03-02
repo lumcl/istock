@@ -51,7 +51,7 @@ class Barcode < ActiveRecord::Base
       ^FT252,763^A0B,75,74^FH\^FD#{hash[:mo]}^FS
     "
     lab1_1 = ""
-    if hash[:product_no].to_s.eql?'MH30-V1120-K00S-C' or hash[:product_no].to_s.eql?'MH30-V1120-K02S-C' or hash[:product_no].to_s.eql?'MH30-21120-K00S-C' or hash[:product_no].to_s.eql?'MH30-21120-300S-C'
+    if hash[:product_no].to_s.eql?'MH30-V1120-K00S-C' or hash[:product_no].to_s.eql?'MH30-V1120-K02S-C' or hash[:product_no].to_s.eql?'MH30-21120-K00S-C' or hash[:product_no].to_s.eql?'MH30-21120-300S-C' or hash[:product_no].to_s.eql?'MH30-V1120-K05S-C' or hash[:product_no].to_s.eql?'MH18-V1120-K20S-C'
       lab1_1 = "^FT588,768^A0B,33,33^FH\^FD^FS"
     else
       lab1_1 = "^FT588,768^A0B,33,33^FH\^FDLEI Product No^FS"
