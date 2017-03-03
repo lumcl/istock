@@ -36,31 +36,31 @@ class Barcode < ActiveRecord::Base
       ^PW945
       ^LL0768
       ^LS0
-      ^FT189,340^BQN,2,7
+      ^FT130,340^BQN,2,7
       ^FDLA,#{hash[:id]}^FS
-      ^FT726,350^A0B,33,33^FH\^FDDate^FS
-      ^FT804,349^A0B,75,74^FH\^FD#{hash[:date]}^FS
-      ^FT306,763^A0B,33,33^FH\^FDDate Code^FS
-      ^FT394,763^A0B,75,74^FH\^FD#{hash[:date_code]}^FS
-      ^FT435,225^A0B,33,33^FH\^FDPlant^FS
-      ^FT525,225^A0B,75,74^FH\^FD#{hash[:factory]}^FS
-      ^FT449,763^A0B,33,33^FH\^FDLot No^FS
-      ^FT532,763^A0B,75,74^FH\^FD#{hash[:lot_no]}^FS
-      ^FT187,763^A0B,33,33^FH\^FDMO^FS
-      ^FT725,768^A0B,33,33^FH\^FDQuantity^FS
-      ^FT252,763^A0B,75,74^FH\^FD#{hash[:mo]}^FS
+      ^FT667,350^A0B,33,33^FH\^FDDate^FS
+      ^FT749,355^A0B,75,74^FH\^FD#{hash[:date]}^FS
+      ^FT247,763^A0B,33,33^FH\^FDDate Code^FS
+      ^FT335,763^A0B,75,74^FH\^FD#{hash[:date_code]}^FS
+      ^FT376,225^A0B,33,33^FH\^FDPlant^FS
+      ^FT466,225^A0B,75,74^FH\^FD#{hash[:factory]}^FS
+      ^FT390,763^A0B,33,33^FH\^FDLot No^FS
+      ^FT473,763^A0B,75,74^FH\^FD#{hash[:lot_no]}^FS
+      ^FT127,763^A0B,33,33^FH\^FDMO^FS
+      ^FT666,768^A0B,33,33^FH\^FDQuantity^FS
+      ^FT193,763^A0B,75,74^FH\^FD#{hash[:mo]}^FS
     "
     lab1_1 = ""
     if hash[:product_no].to_s.eql?'MH30-V1120-K00S-C' or hash[:product_no].to_s.eql?'MH30-V1120-K02S-C' or hash[:product_no].to_s.eql?'MH30-21120-K00S-C' or hash[:product_no].to_s.eql?'MH30-21120-300S-C' or hash[:product_no].to_s.eql?'MH30-V1120-K05S-C' or hash[:product_no].to_s.eql?'MH18-V1120-K20S-C'
-      lab1_1 = "^FT588,768^A0B,33,33^FH\^FD^FS"
+      lab1_1 = "^FT529,768^A0B,33,33^FH\^FD^FS"
     else
-      lab1_1 = "^FT588,768^A0B,33,33^FH\^FDLEI Product No^FS"
+      lab1_1 = "^FT529,768^A0B,33,33^FH\^FDLEI Product No^FS"
     end
     lab2 = "
-      ^FT914,768^A0B,28,50^FH\^FD#{hash[:name]}^FS
-      ^FT930,532^A0B,55,67^FH\^FD**#{hash[:seq]}**^FS
-      ^FT867,768^A0B,28,50^FH\^FD#{hash[:name_parent]}^FS
-      ^FT865,425^A0B,38,50^FH\^FD**#{hash[:seq_parent]}**^FS
+      ^FT855,768^A0B,28,50^FH\^FD#{hash[:name]}^FS
+      ^FT871,532^A0B,55,67^FH\^FD**#{hash[:seq]}**^FS
+      ^FT808,768^A0B,28,50^FH\^FD#{hash[:name_parent]}^FS
+      ^FT806,425^A0B,38,50^FH\^FD**#{hash[:seq_parent]}**^FS
     "
     if hash[:seq_parent].blank?
       lab2 = "
@@ -70,12 +70,12 @@ class Barcode < ActiveRecord::Base
 
     end
     lab3 = "
-      ^FT803,768^A0B,75,74^FH\^FD#{hash[:qty]} #{hash[:meins]}^FS
+      ^FT744,768^A0B,75,74^FH\^FD#{hash[:qty]} #{hash[:meins]}^FS
     "
     if hash[:product_no].to_s.eql?'MH30-V1120-K00S-C' or hash[:product_no].to_s.eql?'MH30-V1120-K02S-C' or hash[:product_no].to_s.eql?'MH30-21120-K00S-C' or hash[:product_no].to_s.eql?'MH30-21120-300S-C'
-      lab3_2 = "^FT657,768^A0B,58,57^FH\^FD^FS"
+      lab3_2 = "^FT615,768^A0B,58,57^FH\^FD^FS"
     else
-      lab3_2 = "^FT657,768^A0B,58,57^FH\^FD#{hash[:product_no]}^FS"
+      lab3_2 = "^FT615,768^A0B,58,57^FH\^FD#{hash[:product_no]}^FS"
     end
 
     lab3_3 = "
